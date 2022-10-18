@@ -1,0 +1,14 @@
+{
+    "root": true,
+    "env": { "node": true, "commonjs": true },
+    "extends": ["eslint:recommended", "google"],
+    "rules": {
+        "quotes": ["error", "double"],
+        "semi": ["error", "never"],
+        "indent": ["error", 4]
+    }, 
+    "parser": "@babel/eslint-parser",
+    "parserOptions": {
+        "requireConfigFile": false
+    }
+}

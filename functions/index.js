@@ -1,9 +1,40 @@
-const functions = require("firebase-functions");
+const functions = require("firebase-functions")
+const express = require("express")
+const app = express()
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+// declare body parser middleware to parse json body
+const bp = require("body-parser")
+app.use(bp.json())
+app.use(bp.urlencoded({extended: true}))
+
+// disable cors for those domains
+const cors = require("cors")({
+    origin: [
+        "https://ceranapos.ebg.tw",
+        "https://ceranapos.web.app",
+        "http://localhost:5173",
+    ],
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    allowedHeaders: ["Content-Type", "Authorization"],
+})
+app.use(cors)
+
+app.get("/", (req, res) => res.status(200).send("Hey there!"))
+app.use("/user", require("./routes/user"))
+app.use("/product", require("./routes/product"))
+// app.use("/material", require("./routes/material"))
+// app.use("/order", require("./routes/order"))
+
+// local ports
+app.listen(5171, () => console.log("Listening on port 5171"))
+
+// cloud functions
+exports.api = functions
+    .region("asia-east1")
+    .https.onRequest(app)
+
+exports.hello = functions
+    .region("asia-east1")
+    .https.onRequest((req, res) => {
+        res.send("Hello from Firebase!")
+    })
