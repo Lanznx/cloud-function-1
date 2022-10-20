@@ -1,12 +1,42 @@
 {
     "root": true,
-    "env": { "node": true, "commonjs": true },
-    "extends": ["eslint:recommended", "google"],
+    "env": {
+        "node": true,
+        "commonjs": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "google"
+    ],
     "rules": {
-        "quotes": ["error", "double"],
-        "semi": ["error", "never"],
-        "indent": ["error", 4]
-    }, 
+        "quotes": [
+            "error",
+            "double"
+        ],
+        "semi": [
+            "error",
+            "never"
+        ],
+        "indent": [
+            "error",
+            4
+        ],
+        "max-len": [
+            "error",
+            {
+                "code": 120
+            },
+            {
+                "ignoreStrings": true
+            },
+            {
+                "ignoreUrls": true
+            },
+            {
+                "ignoreComments": true
+            }
+        ]
+    },
     "parser": "@babel/eslint-parser",
     "parserOptions": {
         "requireConfigFile": false
