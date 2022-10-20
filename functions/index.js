@@ -5,7 +5,7 @@ const app = express()
 // declare body parser middleware to parse json body
 const bp = require("body-parser")
 app.use(bp.json())
-app.use(bp.urlencoded({extended: true}))
+app.use(bp.urlencoded({ extended: true }))
 
 // disable cors for those domains
 const cors = require("cors")({
@@ -24,9 +24,6 @@ app.use("/user", require("./routes/user"))
 app.use("/product", require("./routes/product"))
 // app.use("/material", require("./routes/material"))
 // app.use("/order", require("./routes/order"))
-
-// local ports
-app.listen(5171, () => console.log("Listening on port 5171"))
 
 // cloud functions
 exports.api = functions
