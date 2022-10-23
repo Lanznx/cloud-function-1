@@ -13,26 +13,14 @@ const getProfileModel = async (uid) => {
 
 const createProfileModel = async (uid, user) => {
     try {
-        const result = await db.collection("users").doc(uid).set(user)
-        console.log("result from createProfileModel : ", result)
-        // 等可以看 result 長怎樣再決定要不要加、改這段
-        // if (result) {
-        //     return true
-        // }
-        // return false
+        await db.collection("users").doc(uid).set(user)
     } catch (error) {
         console.log(error)
     }
 }
 const updateProfileModel = async (uid, user) => {
     try {
-        const result = await db.collection("users").doc(uid).set(user)
-        console.log("result from updateProfileModel : ", result)
-        // 等可以看 result 長怎樣再決定要不要加、改這段
-        // if (result) {
-        //     return true
-        // }
-        // return false
+        await db.collection("users").doc(uid).set(user)
     } catch (error) {
         console.log(error)
     }
