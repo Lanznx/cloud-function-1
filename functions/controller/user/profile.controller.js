@@ -7,7 +7,6 @@ const {
 } = require("../../model/user/profile.model")
 
 const getProfile = async (req, res) => {
-    console.log("this is getPROFILE")
     try {
         const idToken = await auth.getIdToken(req)
         const decodedClaims = await admin.auth().verifyIdToken(idToken)
@@ -34,7 +33,6 @@ const getProfile = async (req, res) => {
 }
 
 const createProfile = async (req, res) => {
-    console.log("this si create")
     try {
         // TO-DO 1:
         // middleware to auth
@@ -51,8 +49,6 @@ const createProfile = async (req, res) => {
             })
         }
 
-        console.log(req.body)
-
         // TO-DO 2:
         // 確認參數都有在 body 的 interceptor
 
@@ -66,11 +62,6 @@ const createProfile = async (req, res) => {
         }
         console.log(user)
         await createProfileModel(uid, user)
-        // const isSignUp = await updateProfileModel(uid, user)
-        // 等可以 deploy 再決定要不要加這段
-        // if (!isSignUp) {
-        //     return res.send({ success: false, message: "Sign Up failed" })
-        // }
         return res.send({ success: true })
     } catch (error) {
         return res.send({ success: false, message: "unknown error" })
@@ -109,11 +100,6 @@ const updateProfile = async (req, res) => {
         }
         console.log(user)
         await updateProfileModel(uid, user)
-        // const isSignUp = await updateProfileModel(uid, user)
-        // 等可以 deploy 再決定要不要加這段
-        // if (!isSignUp) {
-        //     return res.send({ success: false, message: "Sign Up failed" })
-        // }
         return res.send({ success: true })
     } catch (error) {
         return res.send({ success: false, message: "unknown error" })
