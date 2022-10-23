@@ -1,8 +1,9 @@
 const express = require("express")
 const router = new express.Router()
 const userProfile = require("../controller/user/profile.controller")
-router.get("/profile", userProfile.getProfile)
-router.post("/profile", userProfile.createProfile)
-router.put("/profile", userProfile.updateProfile)
+const { auth } = require("../middleware/auth")
+router.get("/profile", auth, userProfile.getProfile)
+router.post("/profile", auth, userProfile.createProfile)
+router.put("/profile", auth, userProfile.updateProfile)
 
 module.exports = router

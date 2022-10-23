@@ -1,5 +1,3 @@
-const auth = require("../../utils/auth")
-const { admin } = require("../../utils/admin")
 const {
     getProfileModel,
     updateProfileModel,
@@ -8,9 +6,7 @@ const {
 
 const getProfile = async (req, res) => {
     try {
-        const idToken = await auth.getIdToken(req)
-        const decodedClaims = await admin.auth().verifyIdToken(idToken)
-        const uid = decodedClaims.uid
+        const { uid } = req.middleware
         const userProfile = await getProfileModel(uid)
 
         // if not found user, userProfile will be send as undefined
@@ -34,12 +30,7 @@ const getProfile = async (req, res) => {
 
 const createProfile = async (req, res) => {
     try {
-        // TO-DO 1:
-        // middleware to auth
-        const idToken = await auth.getIdToken(req)
-        const decodedClaims = await admin.auth().verifyIdToken(idToken)
-        const uid = decodedClaims.uid
-        const email = decodedClaims.email
+        const { uid, email } = req.middleware
         const userProfile = await getProfileModel(uid)
 
         if (userProfile) {
@@ -71,21 +62,12 @@ const createProfile = async (req, res) => {
 
 const updateProfile = async (req, res) => {
     try {
-        // TO-DO 1:
-        // middleware to auth
-        const idToken = await auth.getIdToken(req)
-        const decodedClaims = await admin.auth().verifyIdToken(idToken)
-        const uid = decodedClaims.uid
-        const email = decodedClaims.email
+        const { uid, email } = req.middleware
         const userProfile = await getProfileModel(uid)
-
-        // console.log(userProfile.data())
 
         if (!userProfile) {
             return res.send({ success: false, message: "User does not exist" })
         }
-
-        console.log(req.body)
 
         // TO-DO 2:
         // 確認參數都有在 body 的 interceptor
