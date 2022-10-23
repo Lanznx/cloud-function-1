@@ -19,12 +19,12 @@
         ],
         "indent": [
             "error",
-            4
+            2
         ],
         "max-len": [
             "error",
             {
-                "code": 120
+                "code": 80
             },
             {
                 "ignoreStrings": true

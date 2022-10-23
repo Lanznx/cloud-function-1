@@ -9,13 +9,13 @@ app.use(bp.urlencoded({ extended: true }))
 
 // disable cors for those domains
 const cors = require("cors")({
-    origin: [
-        "https://ceranapos.ebg.tw",
-        "https://ceranapos.web.app",
-        "http://localhost:5173",
-    ],
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-    allowedHeaders: ["Content-Type", "Authorization"],
+  origin: [
+    "https://ceranapos.ebg.tw",
+    "https://ceranapos.web.app",
+    "http://localhost:5173",
+  ],
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+  allowedHeaders: ["Content-Type", "Authorization"],
 })
 app.use(cors)
 
@@ -27,11 +27,11 @@ app.use("/product", require("./routes/product"))
 
 // cloud functions
 exports.api = functions
-    .region("asia-east1")
-    .https.onRequest(app)
+  .region("asia-east1")
+  .https.onRequest(app)
 
 exports.hello = functions
-    .region("asia-east1")
-    .https.onRequest((req, res) => {
-        res.send("Hello from Firebase!")
-    })
+  .region("asia-east1")
+  .https.onRequest((req, res) => {
+    res.send("Hello from Firebase!")
+  })
