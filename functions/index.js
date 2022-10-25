@@ -5,17 +5,17 @@ const app = express()
 // declare body parser middleware to parse json body
 const bp = require("body-parser")
 app.use(bp.json())
-app.use(bp.urlencoded({extended: true}))
+app.use(bp.urlencoded({ extended: true }))
 
 // disable cors for those domains
 const cors = require("cors")({
-    origin: [
-        "https://ceranapos.ebg.tw",
-        "https://ceranapos.web.app",
-        "http://localhost:5173",
-    ],
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-    allowedHeaders: ["Content-Type", "Authorization"],
+  origin: [
+    "https://ceranapos.ebg.tw",
+    "https://ceranapos.web.app",
+    "http://localhost:5173",
+  ],
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+  allowedHeaders: ["Content-Type", "Authorization"],
 })
 app.use(cors)
 
@@ -25,16 +25,13 @@ app.use("/product", require("./routes/product"))
 // app.use("/material", require("./routes/material"))
 // app.use("/order", require("./routes/order"))
 
-// local ports
-app.listen(5171, () => console.log("Listening on port 5171"))
-
 // cloud functions
 exports.api = functions
-    .region("asia-east1")
-    .https.onRequest(app)
+  .region("asia-east1")
+  .https.onRequest(app)
 
 exports.hello = functions
-    .region("asia-east1")
-    .https.onRequest((req, res) => {
-        res.send("Hello from Firebase!")
-    })
+  .region("asia-east1")
+  .https.onRequest((req, res) => {
+    res.send("Hello from Firebase!")
+  })

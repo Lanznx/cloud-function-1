@@ -1,5 +1,5 @@
-const auth = require("../../utils/auth")
-const {admin, db} = require("../../utils/admin")
+const auth = require("../../middleware/auth")
+const { admin, db } = require("../../utils/admin")
 
 const get = async (req, res) => {
     try {
@@ -18,7 +18,7 @@ const get = async (req, res) => {
             productList: productList,
         })
     } catch (error) {
-        return res.send({success: false, message: "unknown error"})
+        return res.send({ success: false, message: "unknown error" })
     }
 }
 

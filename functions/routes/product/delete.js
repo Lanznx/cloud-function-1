@@ -1,5 +1,5 @@
-const auth = require("../../utils/auth")
-const {admin, db} = require("../../utils/admin")
+const auth = require("../../middleware/auth")
+const { admin, db } = require("../../utils/admin")
 
 const _delete = async (req, res) => {
     try {
@@ -7,7 +7,7 @@ const _delete = async (req, res) => {
         const decodedClaims = await admin.auth().verifyIdToken(idToken)
         const uid = decodedClaims.uid
 
-        const {productId} = req.body
+        const { productId } = req.body
         const product = await db.collection("products").doc(productId).get()
         if (product.data().uid !== uid) {
             return res.send({
@@ -16,9 +16,9 @@ const _delete = async (req, res) => {
             })
         }
         await db.collection("products").doc(productId).delete()
-        return res.send({success: true})
+        return res.send({ success: true })
     } catch (error) {
-        return res.send({success: false, message: "unknown error"})
+        return res.send({ success: false, message: "unknown error" })
     }
 }
 
