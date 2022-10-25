@@ -5,7 +5,10 @@ const auth = async (req, res, next) => {
     const authorizationHeader = req.headers.authorization || ""
     const components = authorizationHeader.split(" ")
     if (components.length != 2) {
-      return res.send({ success: false, message: "Invalid Token format" })
+      return res.status(400).send({
+        success: false,
+        message: "Invalid Token format",
+      })
     }
     const token = components[1]
     const decodedClaims = await admin.auth().verifyIdToken(token)
@@ -16,7 +19,7 @@ const auth = async (req, res, next) => {
     return next()
   } catch (error) {
     console.log(error)
-    return res.send({ success: false, message: "Invalid Token" })
+    return res.status(401).send({ success: false, message: "Invalid Token" })
   }
 }
 

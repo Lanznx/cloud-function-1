@@ -12,20 +12,20 @@ const getProfile = async (req, res) => {
 
     // if not found user, userProfile will be send as undefined
     if (!userProfile) {
-      return res.send({
-        success: false,
+      return res.status(200).send({
+        success: true,
         userProfile: null,
         message: "the profile is empty",
       })
     }
 
-    return res.send({
+    return res.status(200).send({
       success: true,
       userProfile: userProfile,
     })
   } catch (error) {
     console.log(error)
-    return res.send({ success: false, message: "unknown error" })
+    return res.status(500).send({ success: false, message: "unknown error" })
   }
 }
 
@@ -41,7 +41,7 @@ const createProfile = async (req, res) => {
   }
   const missedKey = checkColumn(profileDto)
   if (missedKey) {
-    return res.send({
+    return res.status(400).send({
       success: false,
       message: `hey! please provide ${missedKey}`,
     })
@@ -51,16 +51,16 @@ const createProfile = async (req, res) => {
     const userProfile = await getProfileModel(uid)
 
     if (userProfile) {
-      return res.send({
+      return res.status(400).send({
         success: false,
         message: "User already has profile",
       })
     }
 
     await createProfileModel(uid, profileDto)
-    return res.send({ success: true })
+    return res.status(201).send({ success: true })
   } catch (error) {
-    return res.send({ success: false, message: "unknown error" })
+    return res.status(201).send({ success: false, message: "unknown error" })
   }
 }
 
@@ -77,7 +77,7 @@ const updateProfile = async (req, res) => {
   }
   const missedKey = checkColumn(profileDto)
   if (missedKey) {
-    return res.send({
+    return res.status(400).send({
       success: false,
       message: `hey! please provide ${missedKey}`,
     })
@@ -87,13 +87,16 @@ const updateProfile = async (req, res) => {
     const userProfile = await getProfileModel(uid)
 
     if (!userProfile) {
-      return res.send({ success: false, message: "User does not exist" })
+      return res.status(400).send({
+        success: false,
+        message: "User does not exist",
+      })
     }
 
     await updateProfileModel(uid, profileDto)
-    return res.send({ success: true })
+    return res.status(204).send({ success: true })
   } catch (error) {
-    return res.send({ success: false, message: "unknown error" })
+    return res.status(500).send({ success: false, message: "unknown error" })
   }
 }
 module.exports = { getProfile, updateProfile, createProfile }
