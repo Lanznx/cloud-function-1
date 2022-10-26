@@ -1,0 +1,9 @@
+name: 'Deploy to Firebase Functions with targets'
+author: 'Adu Williams <aduwillie@gmail.com>, Chris Sankey'
+description: 'A GitHub Action to deploy to Firebase Functions modified to allow production or development deployment'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+branding:
+  icon: 'cloud'
+  color: 'red'

@@ -1,0 +1,19 @@
+name: CD
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  functions-deploy:
+      name: Deploy Functions
+      runs-on: ubuntu-latest
+
+      steps:
+      - uses: actions/checkout@master
+      - uses: YJack0000/deploy-firebase-functions@1.2.0
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          TARGET: default
+          DEPLOY_ONLY: functions
