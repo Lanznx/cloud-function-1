@@ -12,6 +12,9 @@ jobs:
 
       steps:
       - uses: actions/checkout@master
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - uses: chrissank/deploy-firebase-functions@1.0.0
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
