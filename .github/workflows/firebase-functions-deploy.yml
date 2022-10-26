@@ -12,7 +12,7 @@ jobs:
 
       steps:
       - uses: actions/checkout@master
-      - uses: ./actions/deploy-firebase-functions
+      - uses: actions/deploy-firebase-functions@1.2.0
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           TARGET: default
