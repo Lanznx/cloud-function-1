@@ -15,4 +15,4 @@ jobs:
       - uses: YJack0000/deploy-firebase-functions@1.2.0
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          TARGET: ./functions
+          TARGET: functions
