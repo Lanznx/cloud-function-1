@@ -1,4 +1,3 @@
-// const checkColumn = require("../../helper/checkColumn")
 const { getMaterialListModel } = require("../../model/material/material.model")
 const {
   getUserMaterialListModel,
