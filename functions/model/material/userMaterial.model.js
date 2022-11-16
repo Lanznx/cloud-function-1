@@ -14,7 +14,7 @@ const getUserMaterialListModel = async (uid) => {
       userMaterialList.push({
         materialId: materialId,
         materialName: userMaterial["materialName"],
-        amount: userMaterial["amout"],
+        amount: userMaterial["amount"],
       })
     })
 
