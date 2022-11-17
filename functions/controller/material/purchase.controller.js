@@ -1,5 +1,8 @@
 const checkColumn = require("../../helper/checkColumn")
-const { addPurchaseOrder } = require("../../model/material/purchase.model")
+const {
+  addPurchaseOrder,
+  deletePurchaseOrder,
+} = require("../../model/material/purchase.model")
 
 const add = async (req, res) => {
   const { uid } = req.middleware
@@ -35,7 +38,7 @@ const add = async (req, res) => {
     const docId = await addPurchaseOrder(purchaseOrderDTO)
     return res.status(201).send({
       success: true,
-      message: `your purchase order id is ${docId}`,
+      message: `your purchaseOrder id is ${docId}`,
     })
   } catch (error) {
     console.log(error)
@@ -46,6 +49,45 @@ const add = async (req, res) => {
   }
 }
 
+const remove = async (req, res) => {
+  const { orderId } = req.params
+  const { materialId, isDeleteOrder } = req.body
+  const missedKey = checkColumn({ materialId, isDeleteOrder })
+  if (missedKey) {
+    return res.status(400).send({
+      success: false,
+      message: `hey! please provide ${missedKey}`,
+    })
+  }
+
+  try {
+    const docId = await deletePurchaseOrder(orderId, materialId, isDeleteOrder)
+    if (docId === -1) {
+      return res.status(404).send({
+        success: false,
+        message: "order not found",
+      })
+    } else if (docId === -2) {
+      return res.status(404).send({
+        success: false,
+        message: "material not found",
+      })
+    }
+    return res.status(200).send({
+      success: true,
+      message: "successfully deleted",
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send({
+      success: false,
+      message: "unknow error",
+    })
+  }
+}
+
+
 module.exports = {
   add,
+  remove,
 }
