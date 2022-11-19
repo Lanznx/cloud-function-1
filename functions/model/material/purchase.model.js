@@ -43,4 +43,26 @@ const deletePurchaseOrder = async (orderId, materialId, isDeleteOrder)=>{
   }
 }
 
-module.exports={ addPurchaseOrder, deletePurchaseOrder }
+const getPurchaseOrderByTime = async (startTime, endTime, uid) => {
+  try {
+    const docRef = await db.collection("material-record")
+      .where("uid", "==", uid)
+      .where("timestamp", ">=", parseInt(startTime))
+      .where("timestamp", "<=", parseInt(endTime))
+      .get()
+    const purchaseOrderList = []
+    docRef.forEach((doc)=>{
+      purchaseOrderList.push(doc.data())
+    })
+    return purchaseOrderList
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+module.exports={
+  addPurchaseOrder,
+  deletePurchaseOrder,
+  getPurchaseOrderByTime,
+}

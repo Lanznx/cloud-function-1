@@ -24,5 +24,44 @@ const getUserMaterialListModel = async (uid) => {
   }
 }
 
+const updateUserMaterialModel = async (material, uid) => {
+  try {
+    const snapShot = await db
+      .collection("user-materials")
+      .where("materialId", "==", material["id"])
+      .get()
 
-module.exports = { getUserMaterialListModel }
+    if (snapShot.empty) {
+      await db.collection("user-materials").add({
+        uid: uid,
+        materialName: material["name"],
+        amount: material["amountChange"],
+        materialId: material["id"],
+      })
+      return 0
+    }
+
+    const docRef = snapShot.docs[0]
+    const userMaterial = docRef.data()
+    const amount = userMaterial["amount"]
+    const newAmount = amount + material["amountChange"]
+
+    if (newAmount < 0) {
+      return -2
+    }
+
+    await db.collection("user-materials").doc(docRef.id).update({
+      amount: newAmount,
+    })
+
+    return 0
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+module.exports = {
+  getUserMaterialListModel,
+  updateUserMaterialModel,
+}
