@@ -21,7 +21,7 @@ const getUserMaterial = async (req, res) => {
     const userMaterialList = await getUserMaterialListModel(uid)
     if (userMaterialList.length === 0) {
       return res.status(200).send({
-        success: true,
+        success: false,
         userMaterialList: [],
         message: "this user has no material",
       })

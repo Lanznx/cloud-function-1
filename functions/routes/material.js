@@ -6,5 +6,7 @@ const purchaseOrder = require("../controller/material/purchase.controller")
 router.get("/all", auth, material.getMaterial)
 router.get("/user-material", auth, material.getUserMaterial)
 router.post("/purchase-order", auth, purchaseOrder.add)
+router.delete("/purchase-order/:orderId", auth, purchaseOrder.remove)
+router.get("/purchase-order", auth, purchaseOrder.getPurchaseOrder)
 
 module.exports = router
