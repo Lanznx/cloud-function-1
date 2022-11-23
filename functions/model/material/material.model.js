@@ -3,7 +3,10 @@ const { db } = require("../../utils/admin")
 
 const getMaterialListModel = async () => {
   try {
-    const snapShot = await db.collection("materials").get()
+    const snapShot = await db
+      .collection("materials")
+      .where("occurCount", ">", 9)
+      .get()
     const materialList = []
     snapShot.forEach((doc) => {
       const name = doc.data()["name"]
