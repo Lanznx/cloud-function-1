@@ -41,4 +41,34 @@ const getMaterialListModel = async () => {
   }
 }
 
-module.exports = { getPredictListModel, getMaterialListModel }
+const addMaterialModel = async (name) => {
+  try {
+    const docRef = await db.collection("materials").add({
+      name: name,
+      occurCount: 1,
+    })
+    return docRef.id
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const updateMaterialCountModel = async (id) => {
+  try {
+    const docRef = await db.collection("materials").doc(id)
+    const doc = await docRef.get()
+    const count = doc.data()["occurCount"]
+    await docRef.update({
+      occurCount: count + 1,
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+module.exports = {
+  getPredictListModel,
+  getMaterialListModel,
+  addMaterialModel,
+  updateMaterialCountModel,
+}
