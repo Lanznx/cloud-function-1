@@ -53,14 +53,23 @@ const addMaterialModel = async (name) => {
   }
 }
 
-const updateMaterialCountModel = async (id) => {
+
+const updateMaterialCountModel = async (name) => {
   try {
-    const docRef = await db.collection("materials").doc(id)
-    const doc = await docRef.get()
-    const count = doc.data()["occurCount"]
-    await docRef.update({
-      occurCount: count + 1,
+    const snapShot = await db
+      .collection("materials")
+      .where("name", "==", name)
+      .get()
+    if (snapShot.empty) {
+      return -1
+    }
+    const docRef = snapShot.docs[0]
+    const material = docRef.data()
+    const occurCount = material["occurCount"]
+    await db.collection("materials").doc(docRef.id).update({
+      occurCount: occurCount + 1,
     })
+    return 0
   } catch (error) {
     console.log(error)
   }
