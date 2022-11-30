@@ -1,11 +1,26 @@
-const { getMaterialListModel } = require("../../model/material/material.model")
+const {
+  getMaterialListModel,
+  getPredictListModel,
+} = require("../../model/material/material.model")
 const {
   getUserMaterialListModel,
 } = require("../../model/material/userMaterial.model")
 
-const getMaterial = async (req, res) => {
+const getAllMaterial = async (req, res) => {
   try {
     const materialList = await getMaterialListModel()
+    return res.status(200).send({
+      success: true,
+      materialList: materialList,
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const getPredictMaterial = async (req, res) => {
+  try {
+    const materialList = await getPredictListModel()
     return res.status(200).send({
       success: true,
       materialList: materialList,
@@ -35,5 +50,8 @@ const getUserMaterial = async (req, res) => {
   }
 }
 
-
-module.exports = { getMaterial, getUserMaterial }
+module.exports = {
+  getAllMaterial,
+  getPredictMaterial,
+  getUserMaterial,
+}
