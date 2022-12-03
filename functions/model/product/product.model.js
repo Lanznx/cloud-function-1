@@ -77,6 +77,18 @@ const getProductListModel = async (uid) => {
   }
 }
 
+const getProductModel = async (pid) => {
+  try {
+    const docRef = await db.collection("products").doc(pid).get()
+    if (!docRef.exists) {
+      return -1
+    }
+    return docRef.data()
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const removeProductModel = async (pid) => {
   try {
     await db.collection("products").doc(pid).delete()
@@ -108,6 +120,7 @@ module.exports = {
   isProductExistByIdModel,
   isOwnByUserModel,
   getProductListModel,
+  getProductModel,
   removeProductModel,
   updateProductModel,
 }

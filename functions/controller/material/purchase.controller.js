@@ -70,12 +70,10 @@ const add = async (req, res) => {
   try {
     for (let i = 0; i < materialList.length; i++) {
       const material = materialList[i]
-      console.log(material["id"])
       const isMaterialExist = await isUserMaterialExistModel(
         material["id"],
         uid,
       )
-      console.log(isMaterialExist, " ============== isMaterialExist")
       if (isMaterialExist) {
         const result = await updateUserMaterialModel(
           material,

@@ -32,7 +32,6 @@ const isUserMaterialExistModel = async (materialId, uid) => {
       .get()
 
     if (docRef.empty) {
-      console.log("docref not exist ===========")
       return false
     }
 
@@ -50,7 +49,6 @@ const isUserMaterialExistModel = async (materialId, uid) => {
 
 const createUserMaterialModel = async (material, uid) => {
   try {
-    console.log("create!")
     const docRef = await db.collection("user-materials").add({
       uid: uid,
       materialName: material["name"],
@@ -65,7 +63,6 @@ const createUserMaterialModel = async (material, uid) => {
 
 const updateUserMaterialModel = async (material, uid) => {
   try {
-    console.log("update!")
     const snapShot = await db
       .collection("user-materials")
       .where("materialId", "==", material["id"])
