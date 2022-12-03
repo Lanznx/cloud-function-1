@@ -21,7 +21,55 @@ const getOrderModel = async (orderId) => {
   }
 }
 
+const getOrderListByUserModel = async (uid, startAt, limit) => {
+  try {
+    const docRef = await db.collection("orders")
+      .where("uid", "==", uid)
+      .orderBy("timestamp", "desc")
+      .startAfter(startAt)
+      .limit(limit)
+      .get()
+    const orderList = []
+    docRef.forEach((doc)=>{
+      orderList.push({
+        orderId: doc.id,
+        ...doc.data(),
+      })
+    })
+    return orderList
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const getOrderListByEmployeeModel = async (
+  uid,
+  staffName,
+  startAt,
+  limit
+) => {
+  try {
+    const docRef = await db.collection("orders")
+      .where("uid", "==", uid)
+      .where("staffName", "==", staffName)
+      .orderBy("timestamp", "desc")
+      .startAfter(startAt)
+      .limit(limit)
+      .get()
+    const orderList = []
+    docRef.forEach((doc)=>{
+      orderList.push(doc.data())
+    })
+    return orderList
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
 module.exports = {
   addOrderModel,
   getOrderModel,
+  getOrderListByUserModel,
+  getOrderListByEmployeeModel,
 }
