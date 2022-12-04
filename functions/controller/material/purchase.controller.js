@@ -5,7 +5,7 @@ const {
   getPurchaseOrderByTime,
 } = require("../../model/material/purchase.model")
 const {
-  updateUserMaterialModel,
+  updateUserMaterialModel, isUserMaterialExistModel, createUserMaterialModel,
 } = require("../../model/material/userMaterial.model")
 
 const add = async (req, res) => {
@@ -70,15 +70,23 @@ const add = async (req, res) => {
   try {
     for (let i = 0; i < materialList.length; i++) {
       const material = materialList[i]
-      const result = await updateUserMaterialModel(
-        material,
+      const isMaterialExist = await isUserMaterialExistModel(
+        material["id"],
         uid,
       )
-      if (result === -2) {
-        return res.status(400).send({
-          success: true, // success is true because the purchase order is added
-          message: "success but some material quantity is not enough",
-        })
+      if (isMaterialExist) {
+        const result = await updateUserMaterialModel(
+          material,
+          uid,
+        )
+        if (result === -2) {
+          return res.status(400).send({
+            success: true, // success is true because the purchase order is added
+            message: "success but some material quantity is not enough",
+          })
+        }
+      } else {
+        await createUserMaterialModel(material, uid)
       }
     }
 
