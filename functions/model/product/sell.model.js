@@ -67,9 +67,19 @@ const getOrderListByEmployeeModel = async (
 }
 
 
+const removeOrderModel = async (orderId) => {
+  try {
+    await db.collection("orders").doc(orderId).delete()
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
 module.exports = {
   addOrderModel,
   getOrderModel,
   getOrderListByUserModel,
   getOrderListByEmployeeModel,
+  removeOrderModel,
 }

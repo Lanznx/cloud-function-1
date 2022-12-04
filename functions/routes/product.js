@@ -10,7 +10,7 @@ router.put("/", auth, product.update)
 
 router.post("/sell-order", auth, sellOrder.add)
 router.get("/sell-order", auth, sellOrder.getAll)
-// router.delete("/sell-order", auth, sellOrder.remove)
+router.delete("/sell-order", auth, sellOrder.remove)
 
 
 module.exports = router

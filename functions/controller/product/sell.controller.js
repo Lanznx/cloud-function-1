@@ -4,7 +4,11 @@ const {
   updateProductModel,
 } = require("../../model/product/product.model")
 const {
-  addOrderModel, getOrderListByUserModel, getOrderListByEmployeeModel,
+  addOrderModel,
+  getOrderListByUserModel,
+  getOrderListByEmployeeModel,
+  getOrderModel,
+  removeOrderModel,
 } = require("../../model/product/sell.model")
 
 const add = async (req, res) => {
@@ -157,8 +161,47 @@ const getAll = async (req, res) => {
   }
 }
 
+const remove = async (req, res) => {
+  const { uid } = req.middleware
+  const { orderId } = req.body
+  if (!orderId) {
+    return res.status(400).send({
+      success: false,
+      message: "hey! please provide orderId",
+    })
+  }
+  try {
+    const order = await getOrderModel(orderId)
+    if (order === -1) {
+      return res.status(404).send({
+        success: false,
+        message: `hey! order ${orderId} not found`,
+      })
+    }
+    if (order["uid"] !== uid) {
+      return res.status(403).send({
+        success: false,
+        message: "hey! you are not allowed to delete this order",
+      })
+    }
+    removeOrderModel(orderId)
+    return res.status(200).send({
+      success: true,
+      message: "remove order success",
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send({
+      success: false,
+      message: "remove order failed",
+      err: error,
+    })
+  }
+}
+
 
 module.exports = {
   add,
   getAll,
+  remove,
 }
