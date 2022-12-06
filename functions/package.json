@@ -4,7 +4,7 @@
     "type": "commonjs",
     "scripts": {
         "ns": "NODE_PATH='.' node index.js",
-        "lint": "eslint .",
+        "lint": "eslint . --fix",
         "serve": "firebase emulators:start --only functions",
         "shell": "firebase functions:shell",
         "start": "npm run shell",
