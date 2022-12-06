@@ -119,7 +119,7 @@ const update = async (req, res) => {
 
 const remove = async (req, res) => {
   const { uid } = req.middleware
-  const { sid } = req.body
+  const { sid } = req.query
   if (!sid) {
     return res.status(400).send({
       success: false,
