@@ -62,13 +62,12 @@ const getProductListModel = async (uid) => {
     const productList = []
     snapShot.forEach((doc) => {
       const product = doc.data()
-      const productId = doc.id
+      const pid = doc.id
       productList.push({
-        pid: productId,
+        pid: pid,
         name: product["name"],
         type: product["type"],
         price: product["price"],
-        amount: product["amount"],
       })
     })
     return productList
@@ -100,11 +99,10 @@ const removeProductModel = async (pid) => {
 
 const updateProductModel = async (productDTO) => {
   try {
-    await db.collection("products").doc(productDTO["productId"]).update({
+    await db.collection("products").doc(productDTO["pid"]).update({
       name: productDTO["name"],
       type: productDTO["type"],
       price: productDTO["price"],
-      amount: productDTO["amount"],
       uid: productDTO["uid"],
     })
   } catch (error) {
