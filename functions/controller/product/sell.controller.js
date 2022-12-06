@@ -1,9 +1,5 @@
 const checkColumn = require("../../helper/checkColumn")
 const {
-  getProductModel,
-  updateProductModel,
-} = require("../../model/product/product.model")
-const {
   addOrderModel,
   getOrderListByUserModel,
   getOrderListByEmployeeModel,
@@ -44,7 +40,7 @@ const add = async (req, res) => {
     const productDTO = {
       amount: product["amount"],
       price: product["price"],
-      productId: product["productId"],
+      pid: product["pid"],
       productName: product["productName"],
     }
     const productMissedKey = checkColumn(productDTO)
@@ -63,31 +59,6 @@ const add = async (req, res) => {
   }
 
   try {
-    for (let i = 0; i < productList.length; i++) {
-      const product = productList[i]
-      const oldProduct = await getProductModel(product["productId"])
-      if (oldProduct === -1) {
-        return res.status(404).send({
-          success: false,
-          message: `hey! product ${product["productId"]} not found`,
-        })
-      } else if (oldProduct["amount"] < product["amount"]) {
-        return res.status(400).send({
-          success: false,
-          message: `hey! product ${product["productId"]} is out of stock`,
-        })
-      }
-      const newProduct = {
-        amount: oldProduct["amount"] - product["amount"],
-        price: oldProduct["price"],
-        name: oldProduct["name"],
-        type: oldProduct["type"],
-        uid: oldProduct["uid"],
-        productId: product["productId"],
-      }
-      updateProductModel(newProduct)
-    }
-
     const orderId = await addOrderModel(orderDTO)
     return res.status(200).send({
       success: true,
@@ -163,7 +134,7 @@ const getAll = async (req, res) => {
 
 const remove = async (req, res) => {
   const { uid } = req.middleware
-  const { orderId } = req.body
+  const { orderId } = req.query
   if (!orderId) {
     return res.status(400).send({
       success: false,
