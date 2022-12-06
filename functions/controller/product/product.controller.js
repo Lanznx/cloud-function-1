@@ -12,10 +12,9 @@ const {
 const add = async (req, res) => {
   const { uid } = req.middleware
 
-  const { name, amount, price, type } = req.body
+  const { name, price, type } = req.body
   const addProductrDTO = {
     name: name,
-    amount: amount,
     price: price,
     type: type,
     uid: uid,
@@ -31,11 +30,6 @@ const add = async (req, res) => {
       success: false,
       message: "price should be positive",
     })
-  } else if (addProductrDTO["amount"] <= 0) {
-    return res.status(400).send({
-      success: false,
-      message: "amount should be positive",
-    })
   }
 
   try {
@@ -47,11 +41,11 @@ const add = async (req, res) => {
       })
     }
 
-    const productId = await addProductModel(addProductrDTO)
+    const pid = await addProductModel(addProductrDTO)
     return res.status(200).send({
       success: true,
       message: "add product success",
-      productId: productId,
+      pid: pid,
     })
   } catch (error) {
     console.log(error)
@@ -89,9 +83,9 @@ const getAll = async (req, res) => {
 
 const remove = async (req, res) => {
   const { uid } = req.middleware
-  const { productId } = req.body
+  const { pid } = req.query
   const removeProductDTO = {
-    productId: productId,
+    pid: pid,
     uid: uid,
   }
   const missedKey = checkColumn(removeProductDTO)
@@ -103,7 +97,7 @@ const remove = async (req, res) => {
   }
 
   try {
-    const isProductExist = await isProductExistByIdModel(productId)
+    const isProductExist = await isProductExistByIdModel(pid)
     if (!isProductExist) {
       return res.status(400).send({
         success: false,
@@ -111,7 +105,7 @@ const remove = async (req, res) => {
       })
     }
 
-    const isOwnByUser = await isOwnByUserModel(productId, uid)
+    const isOwnByUser = await isOwnByUserModel(pid, uid)
     if (!isOwnByUser) {
       return res.status(400).send({
         success: false,
@@ -120,7 +114,7 @@ const remove = async (req, res) => {
     }
 
 
-    const result = await removeProductModel(productId)
+    const result = await removeProductModel(pid)
     if (result === -1) {
       return res.status(500).send({
         success: false,
@@ -142,11 +136,10 @@ const remove = async (req, res) => {
 
 const update = async (req, res) => {
   const { uid } = req.middleware
-  const { productId, name, amount, price, type } = req.body
+  const { pid, name, price, type } = req.body
   const updateProductDTO = {
-    productId: productId,
+    pid: pid,
     name: name,
-    amount: amount,
     price: price,
     type: type,
     uid: uid,
@@ -162,15 +155,10 @@ const update = async (req, res) => {
       success: false,
       message: "price should be positive",
     })
-  } else if (updateProductDTO["amount"] <= 0) {
-    return res.status(400).send({
-      success: false,
-      message: "amount should be positive",
-    })
   }
 
   try {
-    const isProductExist = await isProductExistByIdModel(productId)
+    const isProductExist = await isProductExistByIdModel(pid)
     if (!isProductExist) {
       return res.status(400).send({
         success: false,
@@ -178,7 +166,7 @@ const update = async (req, res) => {
       })
     }
 
-    const isOwnByUser = await isOwnByUserModel(productId, uid)
+    const isOwnByUser = await isOwnByUserModel(pid, uid)
     if (!isOwnByUser) {
       return res.status(400).send({
         success: false,
