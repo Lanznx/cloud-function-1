@@ -9,50 +9,6 @@ const addProductModel = async (productDTO) => {
   }
 }
 
-const isOwnByUserModel = async (pid, uid) => {
-  try {
-    const docRef = await db.collection("products").doc(pid).get()
-    if (!docRef.exists) {
-      return false
-    }
-    const product = docRef.data()
-    if (product["uid"] !== uid) {
-      return false
-    }
-    return true
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-const isProductExistByNameModel = async (productName) => {
-  try {
-    const snapShot = await db
-      .collection("products")
-      .where("name", "==", productName)
-      .get()
-    if (snapShot.empty) {
-      return false
-    }
-    return true
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-const isProductExistByIdModel = async (pid) => {
-  try {
-    const docRef = await db.collection("products").doc(pid).get()
-    if (!docRef.exists) {
-      return false
-    }
-    return true
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-
 const getProductListModel = async (uid) => {
   try {
     const snapShot = await db
@@ -76,10 +32,27 @@ const getProductListModel = async (uid) => {
   }
 }
 
-const getProductModel = async (pid) => {
+const getProductByPIDModel = async (pid) => {
   try {
     const docRef = await db.collection("products").doc(pid).get()
     if (!docRef.exists) {
+      return -1
+    }
+    return docRef.data()
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const getProductByNameModel = async (uid, productName) => {
+  try {
+    console.log(uid, productName, "uid, productName=============")
+    const docRef = await db
+      .collection("products")
+      .where("uid", "==", uid)
+      .where("name", "==", productName)
+      .get()
+    if (docRef.empty) {
       return -1
     }
     return docRef.data()
@@ -114,11 +87,9 @@ const updateProductModel = async (productDTO) => {
 
 module.exports = {
   addProductModel,
-  isProductExistByNameModel,
-  isProductExistByIdModel,
-  isOwnByUserModel,
   getProductListModel,
-  getProductModel,
+  getProductByPIDModel,
   removeProductModel,
   updateProductModel,
+  getProductByNameModel,
 }
