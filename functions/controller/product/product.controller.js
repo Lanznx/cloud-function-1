@@ -7,6 +7,9 @@ const {
   getProductByNameModel,
   getProductByPIDModel,
 } = require("../../model/product/product.model")
+const { getTypeModel } = require("../../model/type/type.model")
+const typeController = require("../type/type.controller")
+// const tagController = require("../tag/tag.controller")
 
 const add = async (req, res) => {
   const { uid } = req.middleware
@@ -41,6 +44,15 @@ const add = async (req, res) => {
     }
 
     const pid = await addProductModel(addProductrDTO)
+
+    const typeResult = await getTypeModel(uid, type) // 這邊呼叫 type 的方式說不定有更好的寫法
+    if (typeResult === -1) {
+      typeController.add({
+        middleware: { uid: uid },
+        body: { name: type },
+      }, res)
+    }
+
     return res.status(200).send({
       success: true,
       message: "add product success",
@@ -167,12 +179,19 @@ const update = async (req, res) => {
     }
 
     const result = await updateProductModel(updateProductDTO)
-
     if (result === -1) {
       return res.status(500).send({
         success: false,
         message: "Error occured when updating product",
       })
+    }
+
+    const typeResult = await getTypeModel(uid, type) // 這邊呼叫 type 的方式說不定有更好的寫法
+    if (typeResult === -1) {
+      typeController.add({
+        middleware: { uid: uid },
+        body: { name: type },
+      }, res)
     }
     return res.status(200).send({
       success: true,

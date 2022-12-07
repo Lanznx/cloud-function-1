@@ -46,7 +46,6 @@ const getProductByPIDModel = async (pid) => {
 
 const getProductByNameModel = async (uid, productName) => {
   try {
-    console.log(uid, productName, "uid, productName=============")
     const docRef = await db
       .collection("products")
       .where("uid", "==", uid)
@@ -55,7 +54,11 @@ const getProductByNameModel = async (uid, productName) => {
     if (docRef.empty) {
       return -1
     }
-    return docRef.data()
+    let product = {}
+    docRef.forEach((doc) => {
+      product = doc.data()
+    })
+    return product
   } catch (error) {
     console.log(error)
   }
