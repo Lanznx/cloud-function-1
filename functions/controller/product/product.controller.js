@@ -1,13 +1,15 @@
 const checkColumn = require("../../helper/checkColumn")
 const {
   addProductModel,
-  isProductExistByNameModel,
   getProductListModel,
   removeProductModel,
-  isProductExistByIdModel,
   updateProductModel,
-  isOwnByUserModel,
+  getProductByNameModel,
+  getProductByPIDModel,
 } = require("../../model/product/product.model")
+const { getTypeModel } = require("../../model/type/type.model")
+const typeController = require("../type/type.controller")
+// const tagController = require("../tag/tag.controller")
 
 const add = async (req, res) => {
   const { uid } = req.middleware
@@ -33,8 +35,8 @@ const add = async (req, res) => {
   }
 
   try {
-    const isProductExist = await isProductExistByNameModel(name)
-    if (isProductExist) {
+    const product = await getProductByNameModel(uid, name)
+    if (product !== -1) {
       return res.status(400).send({
         success: false,
         message: "product already exist",
@@ -42,6 +44,15 @@ const add = async (req, res) => {
     }
 
     const pid = await addProductModel(addProductrDTO)
+
+    const typeResult = await getTypeModel(uid, type) // 這邊呼叫 type 的方式說不定有更好的寫法
+    if (typeResult === -1) {
+      typeController.add({
+        middleware: { uid: uid },
+        body: { name: type },
+      }, res)
+    }
+
     return res.status(200).send({
       success: true,
       message: "add product success",
@@ -97,22 +108,18 @@ const remove = async (req, res) => {
   }
 
   try {
-    const isProductExist = await isProductExistByIdModel(pid)
-    if (!isProductExist) {
+    const product = await getProductByPIDModel(pid)
+    if (product === -1) {
       return res.status(400).send({
         success: false,
         message: "product not found",
       })
-    }
-
-    const isOwnByUser = await isOwnByUserModel(pid, uid)
-    if (!isOwnByUser) {
+    } else if (product["uid"] !== uid) {
       return res.status(400).send({
         success: false,
         message: "Not Authorized to delete this product",
       })
     }
-
 
     const result = await removeProductModel(pid)
     if (result === -1) {
@@ -158,16 +165,13 @@ const update = async (req, res) => {
   }
 
   try {
-    const isProductExist = await isProductExistByIdModel(pid)
-    if (!isProductExist) {
+    const product = await getProductByPIDModel(pid)
+    if (product === -1) {
       return res.status(400).send({
         success: false,
         message: "product not found",
       })
-    }
-
-    const isOwnByUser = await isOwnByUserModel(pid, uid)
-    if (!isOwnByUser) {
+    } else if (product["uid"] !== uid) {
       return res.status(400).send({
         success: false,
         message: "Not Authorized to update this product",
@@ -175,12 +179,19 @@ const update = async (req, res) => {
     }
 
     const result = await updateProductModel(updateProductDTO)
-
     if (result === -1) {
       return res.status(500).send({
         success: false,
         message: "Error occured when updating product",
       })
+    }
+
+    const typeResult = await getTypeModel(uid, type) // 這邊呼叫 type 的方式說不定有更好的寫法
+    if (typeResult === -1) {
+      typeController.add({
+        middleware: { uid: uid },
+        body: { name: type },
+      }, res)
     }
     return res.status(200).send({
       success: true,

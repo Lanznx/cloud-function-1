@@ -48,16 +48,24 @@ const getAll = async (req, res) => {
   try {
     const staffList = await getAllStaffModel(uid)
     if (staffList.length === 0) {
-      return res.status(404).send({
-        success: false,
+      return res.status(200).send({
+        success: true,
         message: "staff list is empty",
       })
     }
+    const response = staffList.map((staff) => {
+      return {
+        sid: staff.sid,
+        name: staff.name,
+        phoneNumber: staff.phoneNumber,
+        email: staff.email,
+      }
+    })
 
     return res.status(200).send({
       success: true,
       message: "get staff list success",
-      staffList: staffList,
+      staffList: response,
     })
   } catch (error) {
     console.log(error)

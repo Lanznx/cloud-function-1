@@ -51,10 +51,10 @@ const add = async (req, res) => {
       })
     }
   }
-  if (discount > 0) {
+  if (discount < 0) {
     return res.status(400).send({
       success: false,
-      message: "discount should be negative",
+      message: "discount shouldn't be negative",
     })
   }
 
@@ -111,8 +111,8 @@ const getAll = async (req, res) => {
         parseInt(limit)
       )
       if (orderList.length === 0) {
-        return res.status(404).send({
-          success: false,
+        return res.status(200).send({
+          success: true,
           message: "order list is empty",
         })
       }
@@ -144,8 +144,8 @@ const remove = async (req, res) => {
   try {
     const order = await getOrderModel(orderId)
     if (order === -1) {
-      return res.status(404).send({
-        success: false,
+      return res.status(200).send({
+        success: true,
         message: `hey! order ${orderId} not found`,
       })
     }
