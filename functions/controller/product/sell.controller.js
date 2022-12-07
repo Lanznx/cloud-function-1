@@ -51,10 +51,10 @@ const add = async (req, res) => {
       })
     }
   }
-  if (discount > 0) {
+  if (discount < 0) {
     return res.status(400).send({
       success: false,
-      message: "discount should be negative",
+      message: "discount shouldn't be negative",
     })
   }
 
