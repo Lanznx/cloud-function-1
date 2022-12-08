@@ -21,10 +21,28 @@ const getOrderModel = async (orderId) => {
   }
 }
 
-const getOrderListByUserModel = async (uid, startAt, limit) => {
+const getOrderListWithPagination = async (paginationDTO) => {
+  const { uid, startAt, limit, staffName } = paginationDTO
   try {
+    if (!staffName) {
+      const docRef = await db.collection("orders")
+        .where("uid", "==", uid)
+        .orderBy("timestamp", "desc")
+        .startAfter(startAt)
+        .limit(limit)
+        .get()
+      const orderList = []
+      docRef.forEach((doc)=>{
+        orderList.push({
+          orderId: doc.id,
+          ...doc.data(),
+        })
+      })
+      return orderList
+    }
     const docRef = await db.collection("orders")
       .where("uid", "==", uid)
+      .where("staffName", "==", staffName)
       .orderBy("timestamp", "desc")
       .startAfter(startAt)
       .limit(limit)
@@ -42,23 +60,36 @@ const getOrderListByUserModel = async (uid, startAt, limit) => {
   }
 }
 
-const getOrderListByEmployeeModel = async (
-  uid,
-  staffName,
-  startAt,
-  limit
-) => {
+const getOrderListWithGap = async (gapDTO) => {
+  const { uid, startAt, endAt, staffName } = gapDTO
+  console.log(staffName, "staffName")
+
   try {
+    if (!staffName) {
+      const docRef = await db.collection("orders")
+        .where("uid", "==", uid)
+        .where("timestamp", "<=", startAt)
+        .where("timestamp", ">=", endAt)
+        .orderBy("timestamp", "desc")
+        .get()
+      const orderList = []
+      docRef.forEach((doc)=>{
+        orderList.push(doc.data())
+      })
+      return orderList
+    }
+
     const docRef = await db.collection("orders")
       .where("uid", "==", uid)
       .where("staffName", "==", staffName)
       .orderBy("timestamp", "desc")
-      .startAfter(startAt)
-      .limit(limit)
+      .where("timestamp", "<=", startAt)
+      .where("timestamp", ">=", endAt)
       .get()
     const orderList = []
     docRef.forEach((doc)=>{
       orderList.push(doc.data())
+      console.log(doc.data())
     })
     return orderList
   } catch (error) {
@@ -87,8 +118,8 @@ const updateOrderModel = async (orderId, orderDTO) =>{
 module.exports = {
   addOrderModel,
   getOrderModel,
-  getOrderListByUserModel,
-  getOrderListByEmployeeModel,
+  getOrderListWithPagination,
+  getOrderListWithGap,
   removeOrderModel,
   updateOrderModel,
 }
