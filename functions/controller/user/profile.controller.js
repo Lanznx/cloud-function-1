@@ -1,4 +1,4 @@
-const checkColumn = require("../../helper/checkColumn")
+const { checkColumn } = require("../../helper/checkColumn")
 const {
   getProfileModel,
   updateProfileModel,
