@@ -1,4 +1,4 @@
-const checkColumn = require("../../helper/checkColumn")
+const { checkColumn, isNumber } = require("../../helper/checkColumn")
 const {
   addProductModel,
   getProductListModel,
@@ -15,19 +15,24 @@ const add = async (req, res) => {
   const { uid } = req.middleware
 
   const { name, price, type } = req.body
-  const addProductrDTO = {
+  const addProductDTO = {
     name: name,
     price: price,
     type: type,
     uid: uid,
   }
-  const missedKey = checkColumn(addProductrDTO)
+  const missedKey = checkColumn(addProductDTO)
   if (missedKey) {
     return res.status(400).send({
       success: false,
       message: `hey! please provide ${missedKey}`,
     })
-  } else if (addProductrDTO["price"] <= 0) {
+  } else if (!isNumber(addProductDTO["price"])) {
+    return res.status(400).send({
+      success: false,
+      message: "price should be number",
+    })
+  } else if (addProductDTO["price"] <= 0) {
     return res.status(400).send({
       success: false,
       message: "price should be positive",
@@ -43,14 +48,15 @@ const add = async (req, res) => {
       })
     }
 
-    const pid = await addProductModel(addProductrDTO)
+    const pid = await addProductModel(addProductDTO)
 
     const typeResult = await getTypeModel(uid, type) // 這邊呼叫 type 的方式說不定有更好的寫法
     if (typeResult === -1) {
       typeController.add({
         middleware: { uid: uid },
         body: { name: type },
-      }, res)
+      }, null) // 沒給 res 會導致 Cannot read properties of null (reading 'status')
+      // 但是我們可以忽略這個錯誤，因為我們只是想要新增 type 而已
     }
 
     return res.status(200).send({
@@ -157,6 +163,11 @@ const update = async (req, res) => {
       success: false,
       message: `hey! please provide ${missedKey}`,
     })
+  } else if (!isNumber(updateProductDTO["price"])) {
+    return res.status(400).send({
+      success: false,
+      message: "price should be number",
+    })
   } else if (updateProductDTO["price"] <= 0) {
     return res.status(400).send({
       success: false,
@@ -191,7 +202,8 @@ const update = async (req, res) => {
       typeController.add({
         middleware: { uid: uid },
         body: { name: type },
-      }, res)
+      }, null) // 沒給 res 會導致 Cannot read properties of null (reading 'status')
+      // 但是我們可以忽略這個錯誤，因為我們只是想要新增 type 而已
     }
     return res.status(200).send({
       success: true,

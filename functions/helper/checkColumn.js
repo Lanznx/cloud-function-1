@@ -6,4 +6,14 @@ const checkColumn = (dto) => {
     }
   }
 }
-module.exports = checkColumn
+
+const isNumber = (value) => {
+  return typeof value === "number"
+}
+
+const isString = (value) => {
+  return typeof value === "string"
+}
+
+
+module.exports = { checkColumn, isNumber, isString }

@@ -75,6 +75,14 @@ const removeOrderModel = async (orderId) => {
   }
 }
 
+const updateOrderModel = async (orderId, orderDTO) =>{
+  try {
+    await db.collection("orders").doc(orderId).update(orderDTO)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 
 module.exports = {
   addOrderModel,
@@ -82,4 +90,5 @@ module.exports = {
   getOrderListByUserModel,
   getOrderListByEmployeeModel,
   removeOrderModel,
+  updateOrderModel,
 }
