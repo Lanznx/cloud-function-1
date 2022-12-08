@@ -1,4 +1,4 @@
-const { checkColumn } = require("../../helper/checkColumn")
+const { checkColumn, isNumber } = require("../../helper/checkColumn")
 const {
   addOrderModel,
   getOrderListByUserModel,
@@ -12,7 +12,6 @@ const add = async (req, res) => {
   const {
     productList,
     tagList,
-    timestamp,
     staffName,
     discount,
     note,
@@ -22,7 +21,7 @@ const add = async (req, res) => {
     uid: uid,
     productList: productList,
     tagList: tagList,
-    timestamp: timestamp,
+    timestamp: Date().now(),
     staffName: staffName,
     discount: discount,
     totalPrice: totalPrice,
@@ -38,7 +37,6 @@ const add = async (req, res) => {
   for (let i = 0; i < productList.length; i++) {
     const product = productList[i]
     const productDTO = {
-      amount: product["amount"],
       price: product["price"],
       pid: product["pid"],
       productName: product["productName"],
@@ -49,9 +47,19 @@ const add = async (req, res) => {
         success: false,
         message: `hey! please provide ${productMissedKey}`,
       })
+    } else if (!isNumber(productDTO["price"])) {
+      return res.status(400).send({
+        success: false,
+        message: "price should be number",
+      })
     }
   }
-  if (discount > 0) {
+  if (!isNumber(discount) || !isNumber(totalPrice)) {
+    return res.status(400).send({
+      success: false,
+      message: "discount and totalPrice should be number",
+    })
+  } else if (discount > 0) {
     return res.status(400).send({
       success: false,
       message: "discount should be negative",
