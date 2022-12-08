@@ -5,6 +5,7 @@ const {
   getOrderListByEmployeeModel,
   getOrderModel,
   removeOrderModel,
+  updateOrderModel,
 } = require("../../model/product/sell.model")
 
 const add = async (req, res) => {
@@ -21,7 +22,7 @@ const add = async (req, res) => {
     uid: uid,
     productList: productList,
     tagList: tagList,
-    timestamp: Date().now(),
+    timestamp: Date.now(),
     staffName: staffName,
     discount: discount,
     totalPrice: totalPrice,
@@ -178,9 +179,107 @@ const remove = async (req, res) => {
   }
 }
 
+const update = async (req, res) => {
+  const { uid } = req.middleware
+  const { orderId } = req.query
+  const {
+    productList,
+    tagList,
+    staffName,
+    discount,
+    note,
+    totalPrice,
+  } = req.body
+
+  if (!orderId) {
+    return res.status(400).send({
+      success: false,
+      message: "hey! please provide orderId",
+    })
+  }
+
+  const orderDTO = {
+    uid: uid,
+    productList: productList,
+    tagList: tagList,
+    timestamp: Date.now(),
+    staffName: staffName,
+    discount: discount,
+    totalPrice: totalPrice,
+    note: note,
+  }
+  const missedKey = checkColumn(orderDTO)
+  if (missedKey) {
+    return res.status(400).send({
+      success: false,
+      message: `hey! please provide ${missedKey}`,
+    })
+  }
+  for (let i = 0; i < productList.length; i++) {
+    const product = productList[i]
+    const productDTO = {
+      price: product["price"],
+      pid: product["pid"],
+      productName: product["productName"],
+    }
+    const productMissedKey = checkColumn(productDTO)
+    if (productMissedKey) {
+      return res.status(400).send({
+        success: false,
+        message: `hey! please provide ${productMissedKey}`,
+      })
+    } else if (!isNumber(productDTO["price"])) {
+      return res.status(400).send({
+        success: false,
+        message: "price should be number",
+      })
+    }
+  }
+  if (!isNumber(discount) || !isNumber(totalPrice)) {
+    return res.status(400).send({
+      success: false,
+      message: "discount and totalPrice should be number",
+    })
+  } else if (discount > 0) {
+    return res.status(400).send({
+      success: false,
+      message: "discount should be negative",
+    })
+  }
+
+  try {
+    const order = await getOrderModel(orderId)
+    if (order === -1) {
+      return res.status(200).send({
+        success: true,
+        message: `hey! order ${orderId} not found`,
+      })
+    }
+    if (order["uid"] !== uid) {
+      return res.status(403).send({
+        success: false,
+        message: "hey! you are not allowed to update this order",
+      })
+    }
+    await updateOrderModel(orderId, orderDTO)
+    return res.status(200).send({
+      success: true,
+      message: "update order success",
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send({
+      success: false,
+      message: "update order failed",
+      err: error,
+    })
+  }
+}
+
 
 module.exports = {
   add,
   getAll,
   remove,
+  update,
 }
