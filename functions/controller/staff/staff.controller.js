@@ -1,4 +1,4 @@
-const { checkColumn } = require("../../helper/checkColumn")
+const { checkColumn, isString } = require("../../helper/checkColumn")
 const {
   addStaffModel,
   getAllStaffModel,
@@ -23,6 +23,11 @@ const add = async (req, res) => {
     return res.status(400).send({
       success: false,
       message: `hey! please provide ${staffMissedKey}`,
+    })
+  } else if (!isString(phoneNumber)) {
+    return res.status(400).send({
+      success: false,
+      message: "hey! phone number should be string",
     })
   }
 
@@ -93,6 +98,11 @@ const update = async (req, res) => {
     return res.status(400).send({
       success: false,
       message: `hey! please provide ${staffMissedKey}`,
+    })
+  } else if (!isString(phoneNumber)) {
+    return res.status(400).send({
+      success: false,
+      message: "hey! phone number should be string",
     })
   }
 

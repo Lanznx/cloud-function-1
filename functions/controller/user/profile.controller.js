@@ -1,4 +1,4 @@
-const { checkColumn } = require("../../helper/checkColumn")
+const { checkColumn, isString } = require("../../helper/checkColumn")
 const {
   getProfileModel,
   updateProfileModel,
@@ -45,6 +45,11 @@ const createProfile = async (req, res) => {
       success: false,
       message: `hey! please provide ${missedKey}`,
     })
+  } else if (!isString(phoneNumber)) {
+    return res.status(400).send({
+      success: false,
+      message: "hey! phone number should be string",
+    })
   }
 
   try {
@@ -80,6 +85,11 @@ const updateProfile = async (req, res) => {
     return res.status(400).send({
       success: false,
       message: `hey! please provide ${missedKey}`,
+    })
+  } else if (!isString(phoneNumber)) {
+    return res.status(400).send({
+      success: false,
+      message: "hey! phone number should be string",
     })
   }
 
