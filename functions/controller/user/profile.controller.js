@@ -39,7 +39,7 @@ const createProfile = async (req, res) => {
     howToKnowUs: howToKnowUs,
     email: email,
   }
-  const missedKey = checkColumn(profileDto)
+  const missedKey = checkColumn(profileDto, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,
@@ -80,7 +80,7 @@ const updateProfile = async (req, res) => {
     howToKnowUs: howToKnowUs,
     email: email,
   }
-  const missedKey = checkColumn(profileDto)
+  const missedKey = checkColumn(profileDto, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,

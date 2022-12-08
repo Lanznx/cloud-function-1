@@ -18,7 +18,7 @@ const add = async (req, res) => {
     type: type,
     uid: uid,
   }
-  const missedKey = checkColumn(purchaseOrderDTO)
+  const missedKey = checkColumn(purchaseOrderDTO, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,
@@ -107,7 +107,7 @@ const add = async (req, res) => {
 const remove = async (req, res) => {
   const { orderId } = req.params
   const { materialId, isDeleteOrder } = req.body
-  const missedKey = checkColumn({ materialId, isDeleteOrder })
+  const missedKey = checkColumn({ materialId, isDeleteOrder }, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,
@@ -144,7 +144,7 @@ const remove = async (req, res) => {
 const getPurchaseOrder = async (req, res) => {
   const { uid } = req.middleware
   const { startTime, endTime } = req.query
-  const missedKey = checkColumn({ startTime, endTime })
+  const missedKey = checkColumn({ startTime, endTime }, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,
