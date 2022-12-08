@@ -21,7 +21,7 @@ const add = async (req, res) => {
     type: type,
     uid: uid,
   }
-  const missedKey = checkColumn(addProductDTO)
+  const missedKey = checkColumn(addProductDTO, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,
@@ -105,7 +105,7 @@ const remove = async (req, res) => {
     pid: pid,
     uid: uid,
   }
-  const missedKey = checkColumn(removeProductDTO)
+  const missedKey = checkColumn(removeProductDTO, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,
@@ -157,7 +157,7 @@ const update = async (req, res) => {
     type: type,
     uid: uid,
   }
-  const missedKey = checkColumn(updateProductDTO)
+  const missedKey = checkColumn(updateProductDTO, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,

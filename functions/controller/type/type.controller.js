@@ -38,7 +38,7 @@ const add = async (req, res) => {
     name: name,
     uid: uid,
   }
-  const missedKey = checkColumn(typeDTO)
+  const missedKey = checkColumn(typeDTO, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,

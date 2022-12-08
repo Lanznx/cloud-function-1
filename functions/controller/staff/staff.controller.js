@@ -18,7 +18,7 @@ const add = async (req, res) => {
     email: email,
   }
 
-  const staffMissedKey = checkColumn(staffDTO)
+  const staffMissedKey = checkColumn(staffDTO, [])
   if (staffMissedKey) {
     return res.status(400).send({
       success: false,
@@ -93,7 +93,7 @@ const update = async (req, res) => {
     email: email,
   }
 
-  const staffMissedKey = checkColumn(staffDTO)
+  const staffMissedKey = checkColumn(staffDTO, [])
   if (staffMissedKey) {
     return res.status(400).send({
       success: false,

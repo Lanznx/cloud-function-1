@@ -28,7 +28,9 @@ const add = async (req, res) => {
     totalPrice: totalPrice,
     note: note,
   }
-  const orderMissedKey = checkColumn(orderDTO)
+
+  const optionalKeys = ["tagList", "note"]
+  const orderMissedKey = checkColumn(orderDTO, optionalKeys)
   if (orderMissedKey) {
     return res.status(400).send({
       success: false,
@@ -42,7 +44,7 @@ const add = async (req, res) => {
       pid: product["pid"],
       productName: product["productName"],
     }
-    const productMissedKey = checkColumn(productDTO)
+    const productMissedKey = checkColumn(productDTO, [])
     if (productMissedKey) {
       return res.status(400).send({
         success: false,
@@ -208,7 +210,8 @@ const update = async (req, res) => {
     totalPrice: totalPrice,
     note: note,
   }
-  const missedKey = checkColumn(orderDTO)
+  const optionalKeys = ["tagList", "note"]
+  const missedKey = checkColumn(orderDTO, optionalKeys)
   if (missedKey) {
     return res.status(400).send({
       success: false,
@@ -222,7 +225,7 @@ const update = async (req, res) => {
       pid: product["pid"],
       productName: product["productName"],
     }
-    const productMissedKey = checkColumn(productDTO)
+    const productMissedKey = checkColumn(productDTO, [])
     if (productMissedKey) {
       return res.status(400).send({
         success: false,

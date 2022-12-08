@@ -1,7 +1,7 @@
-const checkColumn = (dto) => {
+const checkColumn = (dto, optionalKeys) => {
   const dtoKeys = Object.keys(dto)
   for (let i = 0; i < dtoKeys.length; i++) {
-    if (!dto[dtoKeys[i]]) {
+    if (!dto[dtoKeys[i]] && !optionalKeys.includes(dtoKeys[i])) {
       return dtoKeys[i]
     }
   }
