@@ -1,11 +1,11 @@
 const { checkColumn, isNumber } = require("../../helper/checkColumn")
 const {
   addOrderModel,
-  getOrderListByUserModel,
-  getOrderListByEmployeeModel,
   getOrderModel,
   removeOrderModel,
   updateOrderModel,
+  getOrderListWithGap,
+  getOrderListWithPagination,
 } = require("../../model/product/sell.model")
 
 const add = async (req, res) => {
@@ -88,26 +88,39 @@ const add = async (req, res) => {
 
 const getAll = async (req, res) => {
   const { uid } = req.middleware
-  const { startAt, limit, staffName } = req.query
-  if (!startAt || !limit) {
-    return res.status(400).send({
-      success: false,
-      message: "hey! please provide startAt and limit",
-    })
+  let { startAt, limit, staffName, endAt } = req.query
+  startAt = parseInt(startAt)
+  endAt = parseInt(endAt)
+  limit = parseInt(limit)
+  if (endAt > startAt) {
+    const temp = endAt
+    endAt = startAt
+    startAt = temp
   }
-  console.log(staffName, "staffName")
+  const paginationDTO = {
+    uid: uid,
+    startAt: startAt,
+    limit: limit,
+    staffName: staffName,
+  }
+  const paginationMissedKey = checkColumn(paginationDTO, ["staffName"])
+
+  const gapDTO = {
+    uid: uid,
+    startAt: startAt,
+    endAt: endAt,
+    staffName: staffName,
+  }
+  const gapMissedKey = checkColumn(gapDTO, ["staffName"])
+
   try {
-    if (staffName !== undefined) {
-      const orderList = await getOrderListByEmployeeModel(
-        uid,
-        staffName,
-        parseInt(startAt),
-        parseInt(limit)
-      )
+    if (!paginationMissedKey) {
+      const orderList = await getOrderListWithPagination(paginationDTO)
       if (orderList.length === 0) {
-        return res.status(404).send({
-          success: false,
-          message: "order list not found",
+        return res.status(200).send({
+          success: true,
+          message: "get order list success",
+          orderList: orderList,
         })
       }
       return res.status(200).send({
@@ -115,16 +128,13 @@ const getAll = async (req, res) => {
         message: "get order list success",
         orderList: orderList,
       })
-    } else {
-      const orderList = await getOrderListByUserModel(
-        uid,
-        parseInt(startAt),
-        parseInt(limit)
-      )
+    } else if (!gapMissedKey) {
+      const orderList = await getOrderListWithGap(gapDTO)
       if (orderList.length === 0) {
         return res.status(200).send({
           success: true,
-          message: "order list is empty",
+          message: "get order list success",
+          orderList: orderList,
         })
       }
       return res.status(200).send({
