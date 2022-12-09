@@ -25,6 +25,7 @@ app.use("/product", require("./routes/product"))
 app.use("/material", require("./routes/material"))
 app.use("/staff", require("./routes/staff"))
 app.use("/type", require("./routes/type"))
+app.use("/tag", require("./routes/tag"))
 
 // cloud functions
 exports.api = functions
