@@ -34,7 +34,7 @@ const add = async (req, res) => {
   if (orderMissedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${orderMissedKey}`,
+      message: `麻煩提供 ${orderMissedKey}`,
     })
   }
   for (let i = 0; i < productList.length; i++) {
@@ -48,24 +48,24 @@ const add = async (req, res) => {
     if (productMissedKey) {
       return res.status(400).send({
         success: false,
-        message: `hey! please provide ${productMissedKey}`,
+        message: `麻煩提供 ${productMissedKey}`,
       })
     } else if (!isNumber(productDTO["price"])) {
       return res.status(400).send({
         success: false,
-        message: "price should be number",
+        message: "價錢應為數字",
       })
     }
   }
   if (!isNumber(discount) || !isNumber(totalPrice)) {
     return res.status(400).send({
       success: false,
-      message: "discount and totalPrice should be number",
+      message: "折扣與總價應為數字",
     })
-  } else if (discount > 0) {
+  } else if (discount < 0) {
     return res.status(400).send({
       success: false,
-      message: "discount should be negative",
+      message: "折扣應為正數",
     })
   }
 
@@ -73,14 +73,14 @@ const add = async (req, res) => {
     const orderId = await addOrderModel(orderDTO)
     return res.status(200).send({
       success: true,
-      message: "add order success",
+      message: "成功加入訂單",
       orderId: orderId,
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "add order failed",
+      message: "加入訂單失敗，請聯絡客服",
       err: error,
     })
   }
@@ -119,13 +119,13 @@ const getAll = async (req, res) => {
       if (orderList.length === 0) {
         return res.status(200).send({
           success: true,
-          message: "get order list success",
+          message: "成功獲取訂單",
           orderList: orderList,
         })
       }
       return res.status(200).send({
         success: true,
-        message: "get order list success",
+        message: "成功獲取訂單",
         orderList: orderList,
       })
     } else if (!gapMissedKey) {
@@ -133,13 +133,13 @@ const getAll = async (req, res) => {
       if (orderList.length === 0) {
         return res.status(200).send({
           success: true,
-          message: "get order list success",
+          message: "成功獲取訂單",
           orderList: orderList,
         })
       }
       return res.status(200).send({
         success: true,
-        message: "get order list success",
+        message: "成功獲取訂單",
         orderList: orderList,
       })
     }
@@ -147,7 +147,7 @@ const getAll = async (req, res) => {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "get order list failed",
+      message: "獲取訂單失敗",
       err: error,
     })
   }
@@ -159,7 +159,7 @@ const remove = async (req, res) => {
   if (!orderId) {
     return res.status(400).send({
       success: false,
-      message: "hey! please provide orderId",
+      message: "麻煩提供 orderId",
     })
   }
   try {
@@ -167,25 +167,25 @@ const remove = async (req, res) => {
     if (order === -1) {
       return res.status(200).send({
         success: true,
-        message: `hey! order ${orderId} not found`,
+        message: `找不到 ${orderId} `,
       })
     }
     if (order["uid"] !== uid) {
       return res.status(403).send({
         success: false,
-        message: "hey! you are not allowed to delete this order",
+        message: "你沒有權限刪除此訂單",
       })
     }
     removeOrderModel(orderId)
     return res.status(200).send({
       success: true,
-      message: "remove order success",
+      message: "成功移除訂單",
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "remove order failed",
+      message: "移除訂單失敗，請聯絡客服",
       err: error,
     })
   }
@@ -206,7 +206,7 @@ const update = async (req, res) => {
   if (!orderId) {
     return res.status(400).send({
       success: false,
-      message: "hey! please provide orderId",
+      message: "麻煩提供 orderId",
     })
   }
 
@@ -225,7 +225,7 @@ const update = async (req, res) => {
   if (missedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${missedKey}`,
+      message: `麻煩提供 ${missedKey}`,
     })
   }
   for (let i = 0; i < productList.length; i++) {
@@ -239,24 +239,24 @@ const update = async (req, res) => {
     if (productMissedKey) {
       return res.status(400).send({
         success: false,
-        message: `hey! please provide ${productMissedKey}`,
+        message: `麻煩提供 ${productMissedKey}`,
       })
     } else if (!isNumber(productDTO["price"])) {
       return res.status(400).send({
         success: false,
-        message: "price should be number",
+        message: "價錢應為數字",
       })
     }
   }
   if (!isNumber(discount) || !isNumber(totalPrice)) {
     return res.status(400).send({
       success: false,
-      message: "discount and totalPrice should be number",
+      message: "折扣價錢應為數字",
     })
-  } else if (discount > 0) {
+  } else if (discount < 0) {
     return res.status(400).send({
       success: false,
-      message: "discount should be negative",
+      message: "折扣價錢應為正數",
     })
   }
 
@@ -265,25 +265,25 @@ const update = async (req, res) => {
     if (order === -1) {
       return res.status(200).send({
         success: true,
-        message: `hey! order ${orderId} not found`,
+        message: `找不到 ${orderId} `,
       })
     }
     if (order["uid"] !== uid) {
       return res.status(403).send({
         success: false,
-        message: "hey! you are not allowed to update this order",
+        message: "你沒有權限更新此訂單",
       })
     }
     await updateOrderModel(orderId, orderDTO)
     return res.status(200).send({
       success: true,
-      message: "update order success",
+      message: "成功更新訂單",
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "update order failed",
+      message: "更新訂單失敗，請聯絡客服",
       err: error,
     })
   }

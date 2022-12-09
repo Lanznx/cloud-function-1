@@ -42,7 +42,7 @@ const add = async (req, res) => {
   if (missedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${missedKey}`,
+      message: `麻煩提供 ${missedKey}`,
     })
   }
 
@@ -51,20 +51,20 @@ const add = async (req, res) => {
     if (type !== -1) {
       return res.status(400).send({
         success: false,
-        message: "type already exists",
+        message: "種類已存在",
       })
     }
     const result = await addTypeModel(typeDTO)
     return res.status(200).send({
       success: true,
-      message: "add type successfully",
+      message: "成功加入種類",
       data: result,
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "add type failed",
+      message: "加入種類失敗，請聯絡客服",
       err: error,
     })
   }
