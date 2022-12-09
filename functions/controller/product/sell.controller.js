@@ -1,10 +1,11 @@
-const checkColumn = require("../../helper/checkColumn")
+const { checkColumn, isNumber } = require("../../helper/checkColumn")
 const {
   addOrderModel,
-  getOrderListByUserModel,
-  getOrderListByEmployeeModel,
   getOrderModel,
   removeOrderModel,
+  updateOrderModel,
+  getOrderListWithGap,
+  getOrderListWithPagination,
 } = require("../../model/product/sell.model")
 
 const add = async (req, res) => {
@@ -12,7 +13,6 @@ const add = async (req, res) => {
   const {
     productList,
     tagList,
-    timestamp,
     staffName,
     discount,
     note,
@@ -22,39 +22,50 @@ const add = async (req, res) => {
     uid: uid,
     productList: productList,
     tagList: tagList,
-    timestamp: timestamp,
+    timestamp: Date.now(),
     staffName: staffName,
     discount: discount,
     totalPrice: totalPrice,
     note: note,
   }
-  const orderMissedKey = checkColumn(orderDTO)
+
+  const optionalKeys = ["tagList", "note"]
+  const orderMissedKey = checkColumn(orderDTO, optionalKeys)
   if (orderMissedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${orderMissedKey}`,
+      message: `麻煩提供 ${orderMissedKey}`,
     })
   }
   for (let i = 0; i < productList.length; i++) {
     const product = productList[i]
     const productDTO = {
-      amount: product["amount"],
       price: product["price"],
       pid: product["pid"],
       productName: product["productName"],
     }
-    const productMissedKey = checkColumn(productDTO)
+    const productMissedKey = checkColumn(productDTO, [])
     if (productMissedKey) {
       return res.status(400).send({
         success: false,
-        message: `hey! please provide ${productMissedKey}`,
+        message: `麻煩提供 ${productMissedKey}`,
+      })
+    } else if (!isNumber(productDTO["price"])) {
+      return res.status(400).send({
+        success: false,
+        message: "價錢應為數字",
       })
     }
   }
-  if (discount < 0) {
+  if (!isNumber(discount) || !isNumber(totalPrice)) {
     return res.status(400).send({
       success: false,
-      message: "discount shouldn't be negative",
+      message: "折扣與總價應為數字",
+    })
+  } else if (discount < 0) {
+    return res.status(400).send({
+      success: false,
+      message: "折扣應為正數",
     })
   }
 
@@ -62,14 +73,14 @@ const add = async (req, res) => {
     const orderId = await addOrderModel(orderDTO)
     return res.status(200).send({
       success: true,
-      message: "add order success",
+      message: "成功加入訂單",
       orderId: orderId,
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "add order failed",
+      message: "加入訂單失敗，請聯絡客服",
       err: error,
     })
   }
@@ -77,48 +88,58 @@ const add = async (req, res) => {
 
 const getAll = async (req, res) => {
   const { uid } = req.middleware
-  const { startAt, limit, staffName } = req.query
-  if (!startAt || !limit) {
-    return res.status(400).send({
-      success: false,
-      message: "hey! please provide startAt and limit",
-    })
+  let { startAt, limit, staffName, endAt } = req.query
+  startAt = parseInt(startAt)
+  endAt = parseInt(endAt)
+  limit = parseInt(limit)
+  if (endAt > startAt) {
+    const temp = endAt
+    endAt = startAt
+    startAt = temp
   }
-  console.log(staffName, "staffName")
+  const paginationDTO = {
+    uid: uid,
+    startAt: startAt,
+    limit: limit,
+    staffName: staffName,
+  }
+  const paginationMissedKey = checkColumn(paginationDTO, ["staffName"])
+
+  const gapDTO = {
+    uid: uid,
+    startAt: startAt,
+    endAt: endAt,
+    staffName: staffName,
+  }
+  const gapMissedKey = checkColumn(gapDTO, ["staffName"])
+
   try {
-    if (staffName !== undefined) {
-      const orderList = await getOrderListByEmployeeModel(
-        uid,
-        staffName,
-        parseInt(startAt),
-        parseInt(limit)
-      )
-      if (orderList.length === 0) {
-        return res.status(404).send({
-          success: false,
-          message: "order list not found",
-        })
-      }
-      return res.status(200).send({
-        success: true,
-        message: "get order list success",
-        orderList: orderList,
-      })
-    } else {
-      const orderList = await getOrderListByUserModel(
-        uid,
-        parseInt(startAt),
-        parseInt(limit)
-      )
+    if (!paginationMissedKey) {
+      const orderList = await getOrderListWithPagination(paginationDTO)
       if (orderList.length === 0) {
         return res.status(200).send({
           success: true,
-          message: "order list is empty",
+          message: "成功獲取訂單",
+          orderList: orderList,
         })
       }
       return res.status(200).send({
         success: true,
-        message: "get order list success",
+        message: "成功獲取訂單",
+        orderList: orderList,
+      })
+    } else if (!gapMissedKey) {
+      const orderList = await getOrderListWithGap(gapDTO)
+      if (orderList.length === 0) {
+        return res.status(200).send({
+          success: true,
+          message: "成功獲取訂單",
+          orderList: orderList,
+        })
+      }
+      return res.status(200).send({
+        success: true,
+        message: "成功獲取訂單",
         orderList: orderList,
       })
     }
@@ -126,7 +147,7 @@ const getAll = async (req, res) => {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "get order list failed",
+      message: "獲取訂單失敗",
       err: error,
     })
   }
@@ -138,7 +159,7 @@ const remove = async (req, res) => {
   if (!orderId) {
     return res.status(400).send({
       success: false,
-      message: "hey! please provide orderId",
+      message: "麻煩提供 orderId",
     })
   }
   try {
@@ -146,25 +167,123 @@ const remove = async (req, res) => {
     if (order === -1) {
       return res.status(200).send({
         success: true,
-        message: `hey! order ${orderId} not found`,
+        message: `找不到 ${orderId} `,
       })
     }
     if (order["uid"] !== uid) {
       return res.status(403).send({
         success: false,
-        message: "hey! you are not allowed to delete this order",
+        message: "你沒有權限刪除此訂單",
       })
     }
     removeOrderModel(orderId)
     return res.status(200).send({
       success: true,
-      message: "remove order success",
+      message: "成功移除訂單",
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "remove order failed",
+      message: "移除訂單失敗，請聯絡客服",
+      err: error,
+    })
+  }
+}
+
+const update = async (req, res) => {
+  const { uid } = req.middleware
+  const { orderId } = req.query
+  const {
+    productList,
+    tagList,
+    staffName,
+    discount,
+    note,
+    totalPrice,
+  } = req.body
+
+  if (!orderId) {
+    return res.status(400).send({
+      success: false,
+      message: "麻煩提供 orderId",
+    })
+  }
+
+  const orderDTO = {
+    uid: uid,
+    productList: productList,
+    tagList: tagList,
+    timestamp: Date.now(),
+    staffName: staffName,
+    discount: discount,
+    totalPrice: totalPrice,
+    note: note,
+  }
+  const optionalKeys = ["tagList", "note"]
+  const missedKey = checkColumn(orderDTO, optionalKeys)
+  if (missedKey) {
+    return res.status(400).send({
+      success: false,
+      message: `麻煩提供 ${missedKey}`,
+    })
+  }
+  for (let i = 0; i < productList.length; i++) {
+    const product = productList[i]
+    const productDTO = {
+      price: product["price"],
+      pid: product["pid"],
+      productName: product["productName"],
+    }
+    const productMissedKey = checkColumn(productDTO, [])
+    if (productMissedKey) {
+      return res.status(400).send({
+        success: false,
+        message: `麻煩提供 ${productMissedKey}`,
+      })
+    } else if (!isNumber(productDTO["price"])) {
+      return res.status(400).send({
+        success: false,
+        message: "價錢應為數字",
+      })
+    }
+  }
+  if (!isNumber(discount) || !isNumber(totalPrice)) {
+    return res.status(400).send({
+      success: false,
+      message: "折扣價錢應為數字",
+    })
+  } else if (discount < 0) {
+    return res.status(400).send({
+      success: false,
+      message: "折扣價錢應為正數",
+    })
+  }
+
+  try {
+    const order = await getOrderModel(orderId)
+    if (order === -1) {
+      return res.status(200).send({
+        success: true,
+        message: `找不到 ${orderId} `,
+      })
+    }
+    if (order["uid"] !== uid) {
+      return res.status(403).send({
+        success: false,
+        message: "你沒有權限更新此訂單",
+      })
+    }
+    await updateOrderModel(orderId, orderDTO)
+    return res.status(200).send({
+      success: true,
+      message: "成功更新訂單",
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send({
+      success: false,
+      message: "更新訂單失敗，請聯絡客服",
       err: error,
     })
   }
@@ -175,4 +294,5 @@ module.exports = {
   add,
   getAll,
   remove,
+  update,
 }

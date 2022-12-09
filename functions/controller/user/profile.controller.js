@@ -1,4 +1,4 @@
-const checkColumn = require("../../helper/checkColumn")
+const { checkColumn, isString } = require("../../helper/checkColumn")
 const {
   getProfileModel,
   updateProfileModel,
@@ -15,7 +15,7 @@ const getProfile = async (req, res) => {
       return res.status(200).send({
         success: true,
         userProfile: null,
-        message: "the profile is empty",
+        message: "找不到該個人檔案",
       })
     }
 
@@ -25,7 +25,11 @@ const getProfile = async (req, res) => {
     })
   } catch (error) {
     console.log(error)
-    return res.status(500).send({ success: false, message: "unknown error" })
+    return res.status(500).send({
+      success: false,
+      message: "發生錯誤，請聯絡客服",
+      err: error,
+    })
   }
 }
 
@@ -39,11 +43,16 @@ const createProfile = async (req, res) => {
     howToKnowUs: howToKnowUs,
     email: email,
   }
-  const missedKey = checkColumn(profileDto)
+  const missedKey = checkColumn(profileDto, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${missedKey}`,
+      message: `麻煩提供 ${missedKey}`,
+    })
+  } else if (!isString(phoneNumber)) {
+    return res.status(400).send({
+      success: false,
+      message: "電話號碼的型別應為字串",
     })
   }
 
@@ -53,14 +62,18 @@ const createProfile = async (req, res) => {
     if (userProfile) {
       return res.status(400).send({
         success: false,
-        message: "User already has profile",
+        message: "您已經建立過個人檔案",
       })
     }
 
     await createProfileModel(uid, profileDto)
     return res.status(201).send({ success: true })
   } catch (error) {
-    return res.status(201).send({ success: false, message: "unknown error" })
+    return res.status(500).send({
+      success: false,
+      message: "發生錯誤，請聯絡客服",
+      err: error,
+    })
   }
 }
 
@@ -75,11 +88,16 @@ const updateProfile = async (req, res) => {
     howToKnowUs: howToKnowUs,
     email: email,
   }
-  const missedKey = checkColumn(profileDto)
+  const missedKey = checkColumn(profileDto, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${missedKey}`,
+      message: `麻煩提供 ${missedKey}`,
+    })
+  } else if (!isString(phoneNumber)) {
+    return res.status(400).send({
+      success: false,
+      message: "電話號碼的型別應為字串",
     })
   }
 
@@ -89,14 +107,18 @@ const updateProfile = async (req, res) => {
     if (!userProfile) {
       return res.status(400).send({
         success: false,
-        message: "User does not exist",
+        message: "您尚未建立個人檔案",
       })
     }
 
     await updateProfileModel(uid, profileDto)
     return res.status(204).send({ success: true })
   } catch (error) {
-    return res.status(500).send({ success: false, message: "unknown error" })
+    return res.status(500).send({
+      success: false,
+      message: "發生錯誤，請聯絡客服",
+      err: error,
+    })
   }
 }
 module.exports = { getProfile, updateProfile, createProfile }

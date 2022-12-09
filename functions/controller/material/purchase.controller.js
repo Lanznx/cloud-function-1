@@ -1,4 +1,4 @@
-const checkColumn = require("../../helper/checkColumn")
+const { checkColumn } = require("../../helper/checkColumn")
 const {
   addPurchaseOrder,
   deletePurchaseOrder,
@@ -18,16 +18,16 @@ const add = async (req, res) => {
     type: type,
     uid: uid,
   }
-  const missedKey = checkColumn(purchaseOrderDTO)
+  const missedKey = checkColumn(purchaseOrderDTO, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${missedKey}`,
+      message: `麻煩提供 ${missedKey}`,
     })
   } else if (purchaseOrderDTO["materialList"].length === 0) {
     return res.status(400).send({
       success: false,
-      message: "materialList is empty",
+      message: "原料清單不可為空",
     })
   } else if (purchaseOrderDTO["type"] !== "purchase" &&
     purchaseOrderDTO["type"] !== "consume" &&
@@ -107,11 +107,11 @@ const add = async (req, res) => {
 const remove = async (req, res) => {
   const { orderId } = req.params
   const { materialId, isDeleteOrder } = req.body
-  const missedKey = checkColumn({ materialId, isDeleteOrder })
+  const missedKey = checkColumn({ materialId, isDeleteOrder }, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${missedKey}`,
+      message: `麻煩提供 ${missedKey}`,
     })
   }
 
@@ -144,11 +144,11 @@ const remove = async (req, res) => {
 const getPurchaseOrder = async (req, res) => {
   const { uid } = req.middleware
   const { startTime, endTime } = req.query
-  const missedKey = checkColumn({ startTime, endTime })
+  const missedKey = checkColumn({ startTime, endTime }, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${missedKey}`,
+      message: `麻煩提供 ${missedKey}`,
     })
   }
   try {

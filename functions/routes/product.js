@@ -11,6 +11,7 @@ router.put("/", auth, product.update)
 router.post("/sell-order", auth, sellOrder.add)
 router.get("/sell-order", auth, sellOrder.getAll)
 router.delete("/sell-order", auth, sellOrder.remove)
+router.put("/sell-order", auth, sellOrder.update)
 
 
 module.exports = router

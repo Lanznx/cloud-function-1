@@ -1,4 +1,4 @@
-const checkColumn = require("../../helper/checkColumn")
+const { checkColumn, isString } = require("../../helper/checkColumn")
 const {
   addStaffModel,
   getAllStaffModel,
@@ -18,11 +18,16 @@ const add = async (req, res) => {
     email: email,
   }
 
-  const staffMissedKey = checkColumn(staffDTO)
+  const staffMissedKey = checkColumn(staffDTO, [])
   if (staffMissedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${staffMissedKey}`,
+      message: `麻煩提供 ${staffMissedKey}`,
+    })
+  } else if (!isString(phoneNumber)) {
+    return res.status(400).send({
+      success: false,
+      message: "電話號碼的型別應為字串",
     })
   }
 
@@ -30,14 +35,14 @@ const add = async (req, res) => {
     const sid = await addStaffModel(staffDTO)
     return res.status(200).send({
       success: true,
-      message: "add staff successfully",
+      message: "加入員工成功",
       sid: sid,
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "add staff failed",
+      message: "加入員工失敗，請聯絡客服",
       err: error,
     })
   }
@@ -50,7 +55,7 @@ const getAll = async (req, res) => {
     if (staffList.length === 0) {
       return res.status(200).send({
         success: true,
-        message: "staff list is empty",
+        message: "員工列表為空",
       })
     }
     const response = staffList.map((staff) => {
@@ -64,14 +69,14 @@ const getAll = async (req, res) => {
 
     return res.status(200).send({
       success: true,
-      message: "get staff list success",
+      message: "成功取得員工列表",
       staffList: response,
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "get staff list failed",
+      message: "取得員工列表失敗，請聯絡客服",
       err: error,
     })
   }
@@ -88,11 +93,16 @@ const update = async (req, res) => {
     email: email,
   }
 
-  const staffMissedKey = checkColumn(staffDTO)
+  const staffMissedKey = checkColumn(staffDTO, [])
   if (staffMissedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${staffMissedKey}`,
+      message: `麻煩提供 ${staffMissedKey}`,
+    })
+  } else if (!isString(phoneNumber)) {
+    return res.status(400).send({
+      success: false,
+      message: "電話號碼的型別應為字串",
     })
   }
 
@@ -101,25 +111,25 @@ const update = async (req, res) => {
     if (staff === -1) {
       return res.status(404).send({
         success: false,
-        message: "staff not found",
+        message: "找不到該員工",
       })
     } else if (staff["uid"] !== uid) {
       return res.status(400).send({
         success: false,
-        message: "hey! you can't update this staff",
+        message: "無權限修改該員工",
       })
     }
     updateStaffModel(sid, staffDTO)
     return res.status(200).send({
       success: true,
-      message: "update staff successfully",
+      message: "成功更新員工資料",
       sid: sid,
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "update staff failed",
+      message: "更新員工資料失敗，請聯絡客服",
       err: error,
     })
   }
@@ -131,7 +141,7 @@ const remove = async (req, res) => {
   if (!sid) {
     return res.status(400).send({
       success: false,
-      message: "hey! please provide sid",
+      message: "麻煩提供 sid",
     })
   }
   try {
@@ -139,25 +149,25 @@ const remove = async (req, res) => {
     if (staff === -1) {
       return res.status(404).send({
         success: false,
-        message: "staff not found",
+        message: "找不到該員工",
       })
     } else if (staff["uid"] !== uid) {
       return res.status(400).send({
         success: false,
-        message: "hey! you can't delete this staff",
+        message: "無權限刪除該員工",
       })
     }
     deleteStaffModel(sid)
     return res.status(200).send({
       success: true,
-      message: "delete staff successfully",
+      message: "成功刪除員工",
       sid: sid,
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "delete staff failed",
+      message: "刪除員工失敗，請聯絡客服",
       err: error,
     })
   }

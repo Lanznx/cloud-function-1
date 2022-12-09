@@ -1,4 +1,4 @@
-const checkColumn = require("../../helper/checkColumn")
+const { checkColumn, isNumber } = require("../../helper/checkColumn")
 const {
   addProductModel,
   getProductListModel,
@@ -15,22 +15,27 @@ const add = async (req, res) => {
   const { uid } = req.middleware
 
   const { name, price, type } = req.body
-  const addProductrDTO = {
+  const addProductDTO = {
     name: name,
     price: price,
     type: type,
     uid: uid,
   }
-  const missedKey = checkColumn(addProductrDTO)
+  const missedKey = checkColumn(addProductDTO, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${missedKey}`,
+      message: `麻煩提供 ${missedKey}`,
     })
-  } else if (addProductrDTO["price"] <= 0) {
+  } else if (!isNumber(addProductDTO["price"])) {
     return res.status(400).send({
       success: false,
-      message: "price should be positive",
+      message: "價錢應為數字",
+    })
+  } else if (addProductDTO["price"] <= 0) {
+    return res.status(400).send({
+      success: false,
+      message: "價錢應為正數",
     })
   }
 
@@ -39,30 +44,32 @@ const add = async (req, res) => {
     if (product !== -1) {
       return res.status(400).send({
         success: false,
-        message: "product already exist",
+        message: "產品名稱已存在",
       })
     }
 
-    const pid = await addProductModel(addProductrDTO)
+    const pid = await addProductModel(addProductDTO)
 
     const typeResult = await getTypeModel(uid, type) // 這邊呼叫 type 的方式說不定有更好的寫法
     if (typeResult === -1) {
       typeController.add({
         middleware: { uid: uid },
         body: { name: type },
-      }, res)
+      }, null) // 沒給 res 會導致 Cannot read properties of null (reading 'status')
+      // 但是我們可以忽略這個錯誤，因為我們只是想要新增 type 而已
     }
 
     return res.status(200).send({
       success: true,
-      message: "add product success",
+      message: "成功新增產品",
       pid: pid,
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "add product failed",
+      message: "加入產品失敗",
+      err: error,
     })
   }
 }
@@ -73,8 +80,8 @@ const getAll = async (req, res) => {
     const productList = await getProductListModel(uid)
     if (productList.length === 0) {
       return res.status(200).send({
-        success: false,
-        message: "no product found",
+        success: true,
+        message: "產品列表為空",
         productList: [],
       })
     }
@@ -87,7 +94,8 @@ const getAll = async (req, res) => {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "unknow error",
+      message: "取得產品列表失敗，請聯絡客服",
+      err: error,
     })
   }
 }
@@ -99,11 +107,11 @@ const remove = async (req, res) => {
     pid: pid,
     uid: uid,
   }
-  const missedKey = checkColumn(removeProductDTO)
+  const missedKey = checkColumn(removeProductDTO, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${missedKey}`,
+      message: `麻煩提供 ${missedKey}`,
     })
   }
 
@@ -112,12 +120,12 @@ const remove = async (req, res) => {
     if (product === -1) {
       return res.status(400).send({
         success: false,
-        message: "product not found",
+        message: "找不到此產品",
       })
     } else if (product["uid"] !== uid) {
       return res.status(400).send({
         success: false,
-        message: "Not Authorized to delete this product",
+        message: "無權限刪除此產品",
       })
     }
 
@@ -125,18 +133,19 @@ const remove = async (req, res) => {
     if (result === -1) {
       return res.status(500).send({
         success: false,
-        message: "Error occured when deleting product",
+        message: "刪除失敗，請聯絡客服",
       })
     }
     return res.status(200).send({
       success: true,
-      message: "successfully deleted",
+      message: "刪除成功",
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "unknow error",
+      message: "刪除失敗，請聯絡客服",
+      err: error,
     })
   }
 }
@@ -151,16 +160,21 @@ const update = async (req, res) => {
     type: type,
     uid: uid,
   }
-  const missedKey = checkColumn(updateProductDTO)
+  const missedKey = checkColumn(updateProductDTO, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${missedKey}`,
+      message: `麻煩提供 ${missedKey}`,
+    })
+  } else if (!isNumber(updateProductDTO["price"])) {
+    return res.status(400).send({
+      success: false,
+      message: "價錢應為數字",
     })
   } else if (updateProductDTO["price"] <= 0) {
     return res.status(400).send({
       success: false,
-      message: "price should be positive",
+      message: "價錢應為正數",
     })
   }
 
@@ -169,12 +183,12 @@ const update = async (req, res) => {
     if (product === -1) {
       return res.status(400).send({
         success: false,
-        message: "product not found",
+        message: "找不到此產品",
       })
     } else if (product["uid"] !== uid) {
       return res.status(400).send({
         success: false,
-        message: "Not Authorized to update this product",
+        message: "無權限修改此產品",
       })
     }
 
@@ -182,7 +196,7 @@ const update = async (req, res) => {
     if (result === -1) {
       return res.status(500).send({
         success: false,
-        message: "Error occured when updating product",
+        message: "修改失敗，請聯絡客服",
       })
     }
 
@@ -191,17 +205,19 @@ const update = async (req, res) => {
       typeController.add({
         middleware: { uid: uid },
         body: { name: type },
-      }, res)
+      }, null) // 沒給 res 會導致 Cannot read properties of null (reading 'status')
+      // 但是我們可以忽略這個錯誤，因為我們只是想要新增 type 而已
     }
     return res.status(200).send({
       success: true,
-      message: "successfully updated",
+      message: "修改成功",
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "unknow error",
+      message: "修改失敗，請聯絡客服",
+      err: error,
     })
   }
 }
