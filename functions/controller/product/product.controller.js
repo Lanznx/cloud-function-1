@@ -25,17 +25,17 @@ const add = async (req, res) => {
   if (missedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${missedKey}`,
+      message: `麻煩提供 ${missedKey}`,
     })
   } else if (!isNumber(addProductDTO["price"])) {
     return res.status(400).send({
       success: false,
-      message: "price should be number",
+      message: "價錢應為數字",
     })
   } else if (addProductDTO["price"] <= 0) {
     return res.status(400).send({
       success: false,
-      message: "price should be positive",
+      message: "價錢應為正數",
     })
   }
 
@@ -44,7 +44,7 @@ const add = async (req, res) => {
     if (product !== -1) {
       return res.status(400).send({
         success: false,
-        message: "product already exist",
+        message: "產品名稱已存在",
       })
     }
 
@@ -61,14 +61,15 @@ const add = async (req, res) => {
 
     return res.status(200).send({
       success: true,
-      message: "add product success",
+      message: "成功新增產品",
       pid: pid,
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "add product failed",
+      message: "加入產品失敗",
+      err: error,
     })
   }
 }
@@ -79,8 +80,8 @@ const getAll = async (req, res) => {
     const productList = await getProductListModel(uid)
     if (productList.length === 0) {
       return res.status(200).send({
-        success: false,
-        message: "no product found",
+        success: true,
+        message: "產品列表為空",
         productList: [],
       })
     }
@@ -93,7 +94,8 @@ const getAll = async (req, res) => {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "unknow error",
+      message: "取得產品列表失敗，請聯絡客服",
+      err: error,
     })
   }
 }
@@ -109,7 +111,7 @@ const remove = async (req, res) => {
   if (missedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${missedKey}`,
+      message: `麻煩提供 ${missedKey}`,
     })
   }
 
@@ -118,12 +120,12 @@ const remove = async (req, res) => {
     if (product === -1) {
       return res.status(400).send({
         success: false,
-        message: "product not found",
+        message: "找不到此產品",
       })
     } else if (product["uid"] !== uid) {
       return res.status(400).send({
         success: false,
-        message: "Not Authorized to delete this product",
+        message: "無權限刪除此產品",
       })
     }
 
@@ -131,18 +133,19 @@ const remove = async (req, res) => {
     if (result === -1) {
       return res.status(500).send({
         success: false,
-        message: "Error occured when deleting product",
+        message: "刪除失敗，請聯絡客服",
       })
     }
     return res.status(200).send({
       success: true,
-      message: "successfully deleted",
+      message: "刪除成功",
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "unknow error",
+      message: "刪除失敗，請聯絡客服",
+      err: error,
     })
   }
 }
@@ -161,17 +164,17 @@ const update = async (req, res) => {
   if (missedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${missedKey}`,
+      message: `麻煩提供 ${missedKey}`,
     })
   } else if (!isNumber(updateProductDTO["price"])) {
     return res.status(400).send({
       success: false,
-      message: "price should be number",
+      message: "價錢應為數字",
     })
   } else if (updateProductDTO["price"] <= 0) {
     return res.status(400).send({
       success: false,
-      message: "price should be positive",
+      message: "價錢應為正數",
     })
   }
 
@@ -180,12 +183,12 @@ const update = async (req, res) => {
     if (product === -1) {
       return res.status(400).send({
         success: false,
-        message: "product not found",
+        message: "找不到此產品",
       })
     } else if (product["uid"] !== uid) {
       return res.status(400).send({
         success: false,
-        message: "Not Authorized to update this product",
+        message: "無權限修改此產品",
       })
     }
 
@@ -193,7 +196,7 @@ const update = async (req, res) => {
     if (result === -1) {
       return res.status(500).send({
         success: false,
-        message: "Error occured when updating product",
+        message: "修改失敗，請聯絡客服",
       })
     }
 
@@ -207,13 +210,14 @@ const update = async (req, res) => {
     }
     return res.status(200).send({
       success: true,
-      message: "successfully updated",
+      message: "修改成功",
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "unknow error",
+      message: "修改失敗，請聯絡客服",
+      err: error,
     })
   }
 }

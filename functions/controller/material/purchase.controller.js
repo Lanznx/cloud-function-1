@@ -22,12 +22,12 @@ const add = async (req, res) => {
   if (missedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${missedKey}`,
+      message: `麻煩提供 ${missedKey}`,
     })
   } else if (purchaseOrderDTO["materialList"].length === 0) {
     return res.status(400).send({
       success: false,
-      message: "materialList is empty",
+      message: "原料清單不可為空",
     })
   } else if (purchaseOrderDTO["type"] !== "purchase" &&
     purchaseOrderDTO["type"] !== "consume" &&
@@ -111,7 +111,7 @@ const remove = async (req, res) => {
   if (missedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${missedKey}`,
+      message: `麻煩提供 ${missedKey}`,
     })
   }
 
@@ -148,7 +148,7 @@ const getPurchaseOrder = async (req, res) => {
   if (missedKey) {
     return res.status(400).send({
       success: false,
-      message: `hey! please provide ${missedKey}`,
+      message: `麻煩提供 ${missedKey}`,
     })
   }
   try {
