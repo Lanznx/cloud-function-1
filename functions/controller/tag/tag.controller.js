@@ -1,24 +1,24 @@
 const { checkColumn } = require("../../helper/checkColumn")
 const {
-  getTypeListModel,
-  addTypeModel,
-  getTypeModel,
-} = require("../../model/type/type.model")
+  getTagListModel,
+  addTagModel,
+  getTagModel,
+} = require("../../model/tag/tag.model")
 
 const getAll = async (req, res) => {
   try {
     const { uid } = req.middleware
-    const result = await getTypeListModel(uid)
+    const result = await getTagListModel(uid)
     if (result === -1) {
       return res.status(200).send({
         success: true,
-        message: "種類列表為空",
+        message: "標籤列表為空",
         data: [],
       })
     }
     return res.status(200).send({
       success: true,
-      message: "成功取得種類列表",
+      message: "成功取得標籤列表",
       data: result,
     })
   } catch (error) {
@@ -34,11 +34,11 @@ const getAll = async (req, res) => {
 const add = async (req, res) => {
   const { uid } = req.middleware
   const { name } = req.body
-  const typeDTO = {
+  const tagDTO = {
     name: name,
     uid: uid,
   }
-  const missedKey = checkColumn(typeDTO, [])
+  const missedKey = checkColumn(tagDTO, [])
   if (missedKey) {
     return res.status(400).send({
       success: false,
@@ -47,24 +47,24 @@ const add = async (req, res) => {
   }
 
   try {
-    const type = await getTypeModel(uid, name)
-    if (type !== -1) {
+    const tag = await getTagModel(uid, name)
+    if (tag !== -1) {
       return res.status(400).send({
         success: false,
-        message: "種類已存在",
+        message: "標籤已存在",
       })
     }
-    const result = await addTypeModel(typeDTO)
+    const result = await addTagModel(tagDTO)
     return res.status(200).send({
       success: true,
-      message: "成功加入種類",
+      message: "成功加入標籤",
       data: result,
     })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
       success: false,
-      message: "加入種類失敗，請聯絡客服",
+      message: "加入標籤失敗，請聯絡客服",
       err: error,
     })
   }
