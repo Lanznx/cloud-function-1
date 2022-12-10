@@ -6,6 +6,7 @@ const addOrderModel = async (orderDTO) => {
     return docRef.id
   } catch (error) {
     console.log(error)
+    return -1
   }
 }
 
