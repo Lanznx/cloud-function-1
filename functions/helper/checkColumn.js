@@ -1,10 +1,20 @@
 const checkColumn = (dto, optionalKeys) => {
   const dtoKeys = Object.keys(dto)
   for (let i = 0; i < dtoKeys.length; i++) {
-    if (!dto[dtoKeys[i]] && !optionalKeys.includes(dtoKeys[i])) {
+    if (dto[dtoKeys[i]] === undefined && !optionalKeys.includes(dtoKeys[i])) {
       return dtoKeys[i]
     }
   }
+}
+
+const removeUndefine = (dto) => {
+  const dtoKeys = Object.keys(dto)
+  for (let i = 0; i < dtoKeys.length; i++) {
+    if (dto[dtoKeys[i]] === undefined) {
+      delete dto[dtoKeys[i]]
+    }
+  }
+  return dto
 }
 
 const isNumber = (value) => {
@@ -16,4 +26,4 @@ const isString = (value) => {
 }
 
 
-module.exports = { checkColumn, isNumber, isString }
+module.exports = { checkColumn, isNumber, isString, removeUndefine }

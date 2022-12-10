@@ -1,4 +1,4 @@
-const { checkColumn, isNumber } = require("../../helper/checkColumn")
+const { checkColumn } = require("../../helper/checkColumn")
 const {
   addProductModel,
   getProductListModel,
@@ -14,7 +14,8 @@ const typeController = require("../type/type.controller")
 const add = async (req, res) => {
   const { uid } = req.middleware
 
-  const { name, price, type } = req.body
+  let { name, price, type } = req.body
+  price = parseInt(price)
   const addProductDTO = {
     name: name,
     price: price,
@@ -26,11 +27,6 @@ const add = async (req, res) => {
     return res.status(400).send({
       success: false,
       message: `麻煩提供 ${missedKey}`,
-    })
-  } else if (!isNumber(addProductDTO["price"])) {
-    return res.status(400).send({
-      success: false,
-      message: "價錢應為數字",
     })
   } else if (addProductDTO["price"] <= 0) {
     return res.status(400).send({
@@ -152,7 +148,8 @@ const remove = async (req, res) => {
 
 const update = async (req, res) => {
   const { uid } = req.middleware
-  const { pid, name, price, type } = req.body
+  let { pid, name, price, type } = req.body
+  price = parseInt(price)
   const updateProductDTO = {
     pid: pid,
     name: name,
@@ -165,11 +162,6 @@ const update = async (req, res) => {
     return res.status(400).send({
       success: false,
       message: `麻煩提供 ${missedKey}`,
-    })
-  } else if (!isNumber(updateProductDTO["price"])) {
-    return res.status(400).send({
-      success: false,
-      message: "價錢應為數字",
     })
   } else if (updateProductDTO["price"] <= 0) {
     return res.status(400).send({

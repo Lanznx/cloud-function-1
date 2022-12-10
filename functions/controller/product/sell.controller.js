@@ -1,4 +1,4 @@
-const { checkColumn, isNumber } = require("../../helper/checkColumn")
+const { checkColumn, removeUndefine } = require("../../helper/checkColumn")
 const {
   addOrderModel,
   getOrderModel,
@@ -10,7 +10,7 @@ const {
 
 const add = async (req, res) => {
   const { uid } = req.middleware
-  const {
+  let {
     productList,
     tagList,
     staffName,
@@ -18,6 +18,8 @@ const add = async (req, res) => {
     note,
     totalPrice,
   } = req.body
+  discount = parseInt(discount)
+  totalPrice = parseInt(totalPrice)
   const orderDTO = {
     uid: uid,
     productList: productList,
@@ -30,7 +32,8 @@ const add = async (req, res) => {
   }
 
   const optionalKeys = ["tagList", "note"]
-  const orderMissedKey = checkColumn(orderDTO, optionalKeys)
+  const cleanOrderDTO = removeUndefine(orderDTO)
+  const orderMissedKey = checkColumn(cleanOrderDTO, optionalKeys)
   if (orderMissedKey) {
     return res.status(400).send({
       success: false,
@@ -40,7 +43,7 @@ const add = async (req, res) => {
   for (let i = 0; i < productList.length; i++) {
     const product = productList[i]
     const productDTO = {
-      price: product["price"],
+      price: parseInt(product["price"]),
       pid: product["pid"],
       productName: product["productName"],
     }
@@ -50,19 +53,9 @@ const add = async (req, res) => {
         success: false,
         message: `麻煩提供 ${productMissedKey}`,
       })
-    } else if (!isNumber(productDTO["price"])) {
-      return res.status(400).send({
-        success: false,
-        message: "價錢應為數字",
-      })
     }
   }
-  if (!isNumber(discount) || !isNumber(totalPrice)) {
-    return res.status(400).send({
-      success: false,
-      message: "折扣與總價應為數字",
-    })
-  } else if (discount < 0) {
+  if (discount < 0) {
     return res.status(400).send({
       success: false,
       message: "折扣應為正數",
@@ -71,6 +64,12 @@ const add = async (req, res) => {
 
   try {
     const orderId = await addOrderModel(orderDTO)
+    if (orderId === -1) {
+      return res.status(500).send({
+        success: false,
+        message: "加入訂單失敗，請聯絡客服",
+      })
+    }
     return res.status(200).send({
       success: true,
       message: "成功加入訂單",
@@ -194,7 +193,7 @@ const remove = async (req, res) => {
 const update = async (req, res) => {
   const { uid } = req.middleware
   const { orderId } = req.query
-  const {
+  let {
     productList,
     tagList,
     staffName,
@@ -202,6 +201,8 @@ const update = async (req, res) => {
     note,
     totalPrice,
   } = req.body
+  discount = parseInt(discount)
+  totalPrice = parseInt(totalPrice)
 
   if (!orderId) {
     return res.status(400).send({
@@ -228,10 +229,11 @@ const update = async (req, res) => {
       message: `麻煩提供 ${missedKey}`,
     })
   }
+  const cleanOrderDTO = removeUndefine(orderDTO)
   for (let i = 0; i < productList.length; i++) {
     const product = productList[i]
     const productDTO = {
-      price: product["price"],
+      price: parseInt(product["price"]),
       pid: product["pid"],
       productName: product["productName"],
     }
@@ -241,19 +243,9 @@ const update = async (req, res) => {
         success: false,
         message: `麻煩提供 ${productMissedKey}`,
       })
-    } else if (!isNumber(productDTO["price"])) {
-      return res.status(400).send({
-        success: false,
-        message: "價錢應為數字",
-      })
     }
   }
-  if (!isNumber(discount) || !isNumber(totalPrice)) {
-    return res.status(400).send({
-      success: false,
-      message: "折扣價錢應為數字",
-    })
-  } else if (discount < 0) {
+  if (discount < 0) {
     return res.status(400).send({
       success: false,
       message: "折扣價錢應為正數",
@@ -274,7 +266,7 @@ const update = async (req, res) => {
         message: "你沒有權限更新此訂單",
       })
     }
-    await updateOrderModel(orderId, orderDTO)
+    await updateOrderModel(orderId, cleanOrderDTO)
     return res.status(200).send({
       success: true,
       message: "成功更新訂單",
