@@ -84,7 +84,8 @@ const getAll = async (req, res) => {
 
 const update = async (req, res) => {
   const { uid } = req.middleware
-  const { sid, name, phoneNumber, email } = req.body
+  const { sid } = req.query
+  const { name, phoneNumber, email } = req.body
 
   const staffDTO = {
     uid: uid,
