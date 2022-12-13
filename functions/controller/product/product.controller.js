@@ -9,7 +9,6 @@ const {
 } = require("../../model/product/product.model")
 const { getTypeModel } = require("../../model/type/type.model")
 const typeController = require("../type/type.controller")
-// const tagController = require("../tag/tag.controller")
 
 const add = async (req, res) => {
   const { uid } = req.middleware
@@ -148,7 +147,8 @@ const remove = async (req, res) => {
 
 const update = async (req, res) => {
   const { uid } = req.middleware
-  let { pid, name, price, type } = req.body
+  const { pid } = req.query
+  let { name, price, type } = req.body
   price = parseInt(price)
   const updateProductDTO = {
     pid: pid,
