@@ -7,6 +7,7 @@ const {
   getOrderListWithGap,
   getOrderListWithPagination,
 } = require("../../model/product/sell.model")
+const { addNewTag } = require("./tag.related")
 
 const add = async (req, res) => {
   const { uid } = req.middleware
@@ -46,6 +47,7 @@ const add = async (req, res) => {
       price: parseInt(product["price"]),
       pid: product["pid"],
       productName: product["productName"],
+      amount: parseInt(product["amount"]),
     }
     const productMissedKey = checkColumn(productDTO, [])
     if (productMissedKey) {
@@ -63,6 +65,9 @@ const add = async (req, res) => {
   }
 
   try {
+    if (tagList.length !== 0) {
+      addNewTag(tagList, uid)
+    }
     const orderId = await addOrderModel(orderDTO)
     if (orderId === -1) {
       return res.status(500).send({
@@ -236,6 +241,7 @@ const update = async (req, res) => {
       price: parseInt(product["price"]),
       pid: product["pid"],
       productName: product["productName"],
+      amount: parseInt(product["amount"]),
     }
     const productMissedKey = checkColumn(productDTO, [])
     if (productMissedKey) {
