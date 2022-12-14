@@ -101,6 +101,7 @@ const getTypeStat = async (req, res) => {
         message: "您尚未建立任何商品",
       })
     }
+    // init product revenue list
     productList.forEach((product) => {
       productRevenueList.push({
         productName: product["name"],
@@ -115,7 +116,7 @@ const getTypeStat = async (req, res) => {
         message: "您尚未建立任何訂單",
       })
     }
-
+    // fill product revenue list
     orderList.forEach((order) => {
       order["productList"].forEach((product) => {
         productRevenueList.forEach((p) => {
@@ -125,9 +126,12 @@ const getTypeStat = async (req, res) => {
         })
       })
     })
+
+    // fill type revenue list
     productRevenueList.forEach((product) => {
-      if (typeRevenueList.find((type) => type["typeName"] ===
-       product["type"])) {
+      const isTypeExist = typeRevenueList
+        .find((type) => type["typeName"] === product["type"])
+      if (isTypeExist) {
         typeRevenueList.forEach((type) => {
           if (type["typeName"] === product["type"]) {
             type["revenue"] += product["revenue"]
