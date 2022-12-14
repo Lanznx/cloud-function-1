@@ -114,10 +114,9 @@ const add = async (req, res) => {
 
 const getAll = async (req, res) => {
   const { uid } = req.middleware
-  let { startAt, limit, staffName, endAt } = req.query
+  let { startAt, staffName, endAt } = req.query
   startAt = parseInt(startAt)
   endAt = parseInt(endAt)
-  limit = parseInt(limit)
   if (endAt > startAt) {
     const temp = endAt
     endAt = startAt
@@ -126,7 +125,6 @@ const getAll = async (req, res) => {
   const paginationDTO = {
     uid: uid,
     startAt: startAt,
-    limit: limit,
     staffName: staffName,
   }
   const paginationMissedKey = checkColumn(paginationDTO, ["staffName"])

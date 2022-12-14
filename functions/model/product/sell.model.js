@@ -23,14 +23,13 @@ const getOrderModel = async (orderId) => {
 }
 
 const getOrderListWithPagination = async (paginationDTO) => {
-  const { uid, startAt, limit, staffName } = paginationDTO
+  const { uid, startAt, staffName } = paginationDTO
   try {
     if (!staffName) {
       const docRef = await db.collection("orders")
         .where("uid", "==", uid)
         .orderBy("timestamp", "desc")
         .startAfter(startAt)
-        .limit(limit)
         .get()
       const orderList = []
       docRef.forEach((doc)=>{
@@ -46,7 +45,6 @@ const getOrderListWithPagination = async (paginationDTO) => {
       .where("staffName", "==", staffName)
       .orderBy("timestamp", "desc")
       .startAfter(startAt)
-      .limit(limit)
       .get()
     const orderList = []
     docRef.forEach((doc)=>{
