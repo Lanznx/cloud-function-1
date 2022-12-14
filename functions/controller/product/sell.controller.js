@@ -8,7 +8,6 @@ const {
   removeOrderModel,
   updateOrderModel,
   getOrderListWithGap,
-  getOrderListWithPagination,
 } = require("../../model/product/sell.model")
 const {
   addNewDiscountTypes,
@@ -122,12 +121,6 @@ const getAll = async (req, res) => {
     endAt = startAt
     startAt = temp
   }
-  const paginationDTO = {
-    uid: uid,
-    startAt: startAt,
-    staffName: staffName,
-  }
-  const paginationMissedKey = checkColumn(paginationDTO, ["staffName"])
 
   const gapDTO = {
     uid: uid,
@@ -136,37 +129,27 @@ const getAll = async (req, res) => {
     staffName: staffName,
   }
   const gapMissedKey = checkColumn(gapDTO, ["staffName"])
+  if (gapMissedKey) {
+    return res.status(400).send({
+      success: false,
+      message: `麻煩提供 ${gapMissedKey}`,
+    })
+  }
 
   try {
-    if (!paginationMissedKey) {
-      const orderList = await getOrderListWithPagination(paginationDTO)
-      if (orderList.length === 0) {
-        return res.status(200).send({
-          success: true,
-          message: "成功獲取訂單",
-          orderList: orderList,
-        })
-      }
-      return res.status(200).send({
-        success: true,
-        message: "成功獲取訂單",
-        orderList: orderList,
-      })
-    } else if (!gapMissedKey) {
-      const orderList = await getOrderListWithGap(gapDTO)
-      if (orderList.length === 0) {
-        return res.status(200).send({
-          success: true,
-          message: "成功獲取訂單",
-          orderList: orderList,
-        })
-      }
+    const orderList = await getOrderListWithGap(gapDTO)
+    if (orderList.length === 0) {
       return res.status(200).send({
         success: true,
         message: "成功獲取訂單",
         orderList: orderList,
       })
     }
+    return res.status(200).send({
+      success: true,
+      message: "成功獲取訂單",
+      orderList: orderList,
+    })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
