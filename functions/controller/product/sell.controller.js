@@ -47,6 +47,7 @@ const add = async (req, res) => {
       price: parseInt(product["price"]),
       pid: product["pid"],
       productName: product["productName"],
+      amount: parseInt(product["amount"]),
     }
     const productMissedKey = checkColumn(productDTO, [])
     if (productMissedKey) {
@@ -240,6 +241,7 @@ const update = async (req, res) => {
       price: parseInt(product["price"]),
       pid: product["pid"],
       productName: product["productName"],
+      amount: parseInt(product["amount"]),
     }
     const productMissedKey = checkColumn(productDTO, [])
     if (productMissedKey) {

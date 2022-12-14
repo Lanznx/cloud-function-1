@@ -63,7 +63,6 @@ const getOrderListWithPagination = async (paginationDTO) => {
 
 const getOrderListWithGap = async (gapDTO) => {
   const { uid, startAt, endAt, staffName } = gapDTO
-  console.log(staffName, "staffName")
 
   try {
     if (!staffName) {
@@ -90,7 +89,6 @@ const getOrderListWithGap = async (gapDTO) => {
     const orderList = []
     docRef.forEach((doc)=>{
       orderList.push(doc.data())
-      console.log(doc.data())
     })
     return orderList
   } catch (error) {
