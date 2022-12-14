@@ -55,6 +55,9 @@ const getOrderListWithPagination = async (paginationDTO) => {
         ...doc.data(),
       })
     })
+    if (!orderList) {
+      return []
+    }
     return orderList
   } catch (error) {
     console.log(error)
@@ -90,6 +93,9 @@ const getOrderListWithGap = async (gapDTO) => {
     docRef.forEach((doc)=>{
       orderList.push(doc.data())
     })
+    if (!orderList) {
+      return []
+    }
     return orderList
   } catch (error) {
     console.log(error)
