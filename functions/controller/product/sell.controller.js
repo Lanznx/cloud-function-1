@@ -1,12 +1,19 @@
 const { checkColumn, removeUndefine } = require("../../helper/checkColumn")
 const {
+  getDiscountTypeList,
+} = require("../../model/discountType/discountType.model")
+const {
   addOrderModel,
   getOrderModel,
   removeOrderModel,
   updateOrderModel,
   getOrderListWithGap,
-  getOrderListWithPagination,
 } = require("../../model/product/sell.model")
+const {
+  addNewDiscountTypes,
+  addNewNote,
+  isDiscountTypesValid,
+} = require("./discount.related")
 const { addNewTag } = require("./tag.related")
 
 const add = async (req, res) => {
@@ -15,11 +22,10 @@ const add = async (req, res) => {
     productList,
     tagList,
     staffName,
-    discount,
+    discountTypes,
     note,
     totalPrice,
   } = req.body
-  discount = parseInt(discount)
   totalPrice = parseInt(totalPrice)
   const orderDTO = {
     uid: uid,
@@ -27,12 +33,12 @@ const add = async (req, res) => {
     tagList: tagList,
     timestamp: Date.now(),
     staffName: staffName,
-    discount: discount,
+    discountTypes: discountTypes,
     totalPrice: totalPrice,
     note: note,
   }
 
-  const optionalKeys = ["tagList", "note"]
+  const optionalKeys = ["tagList", "note", "discountTypes"]
   const cleanOrderDTO = removeUndefine(orderDTO)
   const orderMissedKey = checkColumn(cleanOrderDTO, optionalKeys)
   if (orderMissedKey) {
@@ -57,18 +63,33 @@ const add = async (req, res) => {
       })
     }
   }
-  if (discount < 0) {
+
+  // Check if discountTypes is valid
+  const isValid = isDiscountTypesValid(discountTypes)
+  if (isValid === -1) {
+    return res.status(400).send({
+      success: false,
+      message: "麻煩提供折扣類型名稱及折扣",
+    })
+  } else if (isValid === -2) {
     return res.status(400).send({
       success: false,
       message: "折扣應為正數",
     })
   }
+  // add discountTypes to note
+  const newNote = addNewNote(note, discountTypes)
+  cleanOrderDTO["note"] = newNote
+
+  // 如果 discountTypes 不存在於資料庫，則新增
+  const discountTypeList = await getDiscountTypeList(uid)
+  addNewDiscountTypes(discountTypeList, discountTypes, uid)
 
   try {
     if (tagList.length !== 0) {
       addNewTag(tagList, uid)
     }
-    const orderId = await addOrderModel(orderDTO)
+    const orderId = await addOrderModel(cleanOrderDTO)
     if (orderId === -1) {
       return res.status(500).send({
         success: false,
@@ -100,12 +121,6 @@ const getAll = async (req, res) => {
     endAt = startAt
     startAt = temp
   }
-  const paginationDTO = {
-    uid: uid,
-    startAt: startAt,
-    staffName: staffName,
-  }
-  const paginationMissedKey = checkColumn(paginationDTO, ["staffName"])
 
   const gapDTO = {
     uid: uid,
@@ -114,37 +129,27 @@ const getAll = async (req, res) => {
     staffName: staffName,
   }
   const gapMissedKey = checkColumn(gapDTO, ["staffName"])
+  if (gapMissedKey) {
+    return res.status(400).send({
+      success: false,
+      message: `麻煩提供 ${gapMissedKey}`,
+    })
+  }
 
   try {
-    if (!paginationMissedKey) {
-      const orderList = await getOrderListWithPagination(paginationDTO)
-      if (orderList.length === 0) {
-        return res.status(200).send({
-          success: true,
-          message: "成功獲取訂單",
-          orderList: orderList,
-        })
-      }
-      return res.status(200).send({
-        success: true,
-        message: "成功獲取訂單",
-        orderList: orderList,
-      })
-    } else if (!gapMissedKey) {
-      const orderList = await getOrderListWithGap(gapDTO)
-      if (orderList.length === 0) {
-        return res.status(200).send({
-          success: true,
-          message: "成功獲取訂單",
-          orderList: orderList,
-        })
-      }
+    const orderList = await getOrderListWithGap(gapDTO)
+    if (orderList.length === 0) {
       return res.status(200).send({
         success: true,
         message: "成功獲取訂單",
         orderList: orderList,
       })
     }
+    return res.status(200).send({
+      success: true,
+      message: "成功獲取訂單",
+      orderList: orderList,
+    })
   } catch (error) {
     console.log(error)
     return res.status(500).send({
@@ -200,39 +205,31 @@ const update = async (req, res) => {
     productList,
     tagList,
     staffName,
-    discount,
+    discountTypes,
     note,
     totalPrice,
   } = req.body
-  discount = parseInt(discount)
   totalPrice = parseInt(totalPrice)
-
-  if (!orderId) {
-    return res.status(400).send({
-      success: false,
-      message: "麻煩提供 orderId",
-    })
-  }
-
   const orderDTO = {
     uid: uid,
     productList: productList,
     tagList: tagList,
     timestamp: Date.now(),
     staffName: staffName,
-    discount: discount,
+    discountTypes: discountTypes,
     totalPrice: totalPrice,
     note: note,
   }
-  const optionalKeys = ["tagList", "note"]
-  const missedKey = checkColumn(orderDTO, optionalKeys)
-  if (missedKey) {
+
+  const optionalKeys = ["tagList", "note", "discountTypes"]
+  const cleanOrderDTO = removeUndefine(orderDTO)
+  const orderMissedKey = checkColumn(cleanOrderDTO, optionalKeys)
+  if (orderMissedKey) {
     return res.status(400).send({
       success: false,
-      message: `麻煩提供 ${missedKey}`,
+      message: `麻煩提供 ${orderMissedKey}`,
     })
   }
-  const cleanOrderDTO = removeUndefine(orderDTO)
   for (let i = 0; i < productList.length; i++) {
     const product = productList[i]
     const productDTO = {
@@ -249,14 +246,37 @@ const update = async (req, res) => {
       })
     }
   }
-  if (discount < 0) {
+
+  // Check if discountTypes is valid
+  if (!discountTypes) {
+    discountTypes = []
+  }
+  const isValid = isDiscountTypesValid(discountTypes)
+  if (isValid === -1) {
     return res.status(400).send({
       success: false,
-      message: "折扣價錢應為正數",
+      message: "麻煩提供折扣類型名稱及折扣",
+    })
+  } else if (isValid === -2) {
+    return res.status(400).send({
+      success: false,
+      message: "折扣應為正數",
     })
   }
 
   try {
+    // add discountTypes to note
+    const newNote = addNewNote(note, discountTypes)
+    cleanOrderDTO["note"] = newNote
+
+    // 如果 discountTypes 不存在於資料庫，則新增
+    const discountTypeList = await getDiscountTypeList(uid)
+    addNewDiscountTypes(discountTypeList, discountTypes, uid)
+
+    if (tagList.length !== 0) {
+      addNewTag(tagList, uid)
+    }
+
     const order = await getOrderModel(orderId)
     if (order === -1) {
       return res.status(200).send({

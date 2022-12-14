@@ -12,7 +12,7 @@ const add = async (req, res) => {
   const discountTypeDTO = {
     uid: uid,
     name: name,
-    discount: discount,
+    discount: parseInt(discount),
     note: note,
   }
   const discountTypeMissedKey = checkColumn(discountTypeDTO, [])
@@ -40,7 +40,7 @@ const add = async (req, res) => {
     return res.status(200).send({
       success: true,
       message: "成功新增折扣類型",
-      data: discountType,
+      discountList: discountType,
     })
   } catch (error) {
     console.log(error)
@@ -60,13 +60,13 @@ const get = async (req, res) => {
       return res.status(200).send({
         success: true,
         message: "您沒有任何折扣類型",
-        data: [],
+        discountList: [],
       })
     }
     return res.status(200).send({
       success: true,
       message: "成功取得折扣類型",
-      data: discountTypeList,
+      discountList: discountTypeList,
     })
   } catch (error) {
     console.log(error)
