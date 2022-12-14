@@ -12,7 +12,7 @@ const add = async (req, res) => {
   const discountTypeDTO = {
     uid: uid,
     name: name,
-    discount: discount,
+    discount: parseInt(discount),
     note: note,
   }
   const discountTypeMissedKey = checkColumn(discountTypeDTO, [])
