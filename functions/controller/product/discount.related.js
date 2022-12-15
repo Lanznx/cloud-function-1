@@ -41,7 +41,7 @@ const addNewNote = (note, discountTypes) => {
   return newNote
 }
 
-const isDiscountTypesValid = (discountTypes, res) => {
+const isDiscountTypesValid = (discountTypes) => {
   for (let i = 0; i < discountTypes.length; i++) {
     const discountType = discountTypes[i]
     const discountTypeDTO = {

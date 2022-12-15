@@ -65,26 +65,30 @@ const add = async (req, res) => {
   }
 
   // Check if discountTypes is valid
-  const isValid = isDiscountTypesValid(discountTypes)
-  if (isValid === -1) {
-    return res.status(400).send({
-      success: false,
-      message: "麻煩提供折扣類型名稱及折扣",
-    })
-  } else if (isValid === -2) {
-    return res.status(400).send({
-      success: false,
-      message: "折扣應為正數",
-    })
+  if (discountTypes.length !== 0) {
+    const isValid = isDiscountTypesValid(discountTypes)
+    if (isValid === -1) {
+      return res.status(400).send({
+        success: false,
+        message: "麻煩提供折扣類型名稱及折扣",
+      })
+    } else if (isValid === -2) {
+      return res.status(400).send({
+        success: false,
+        message: "折扣應為正數",
+      })
+    }
+
+    // add discountTypes to note
+    const newNote = addNewNote(note, discountTypes)
+    cleanOrderDTO["note"] = newNote
+    console.log(cleanOrderDTO["note"], "cleanOrderDTO['note']")
+    console.log(newNote, "newNote")
+
+    // 如果 discountTypes 不存在於資料庫，則新增
+    const discountTypeList = await getDiscountTypeList(uid)
+    addNewDiscountTypes(discountTypeList, discountTypes, uid)
   }
-  // add discountTypes to note
-  const newNote = addNewNote(note, discountTypes)
-  cleanOrderDTO["note"] = newNote
-
-  // 如果 discountTypes 不存在於資料庫，則新增
-  const discountTypeList = await getDiscountTypeList(uid)
-  addNewDiscountTypes(discountTypeList, discountTypes, uid)
-
   try {
     if (tagList.length !== 0) {
       addNewTag(tagList, uid)
