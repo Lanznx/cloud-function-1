@@ -93,11 +93,10 @@ const remove = async (req, res) =>{
     })
   }
   try {
-    const result = await deleteTagModel(tagDTO)
+    deleteTagModel(tagDTO)
     return res.status(200).send({
       success: true,
       message: "成功刪除標籤",
-      data: result,
     })
   } catch (error) {
     console.log(error)

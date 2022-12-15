@@ -3,6 +3,7 @@ const {
   getTypeListModel,
   addTypeModel,
   getTypeModel,
+  deleteTypeModel,
 } = require("../../model/type/type.model")
 
 const getAll = async (req, res) => {
@@ -70,7 +71,40 @@ const add = async (req, res) => {
   }
 }
 
+const remove = async (req, res) =>{
+  const { uid } = req.middleware
+  const { name } = req.query
+  if (!name) {
+    return res.status(400).send({
+      success: false,
+      message: "請提供種類名稱",
+    })
+  }
+  try {
+    const type = await getTypeModel(uid, name)
+    if (type === -1) {
+      return res.status(400).send({
+        success: false,
+        message: "種類不存在",
+      })
+    }
+    deleteTypeModel(uid, name)
+    return res.status(200).send({
+      success: true,
+      message: "成功刪除種類",
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send({
+      success: false,
+      message: "刪除種類失敗，請聯絡客服",
+      err: error,
+    })
+  }
+}
+
 module.exports = {
   getAll,
   add,
+  remove,
 }
