@@ -15,10 +15,15 @@ const getProductStat = async (req, res) => {
     oneWeekAgo.setHours(0, 0, 0, 0)
     endAt = oneWeekAgo.getTime()
   }
+  if (parseInt(startAt) < parseInt(endAt)) {
+    const temp = startAt
+    startAt = endAt
+    endAt = temp
+  }
   const statDTO = {
     uid: uid,
-    startAt: startAt,
-    endAt: endAt,
+    startAt: parseInt(startAt),
+    endAt: parseInt(endAt),
   }
   try {
     const productRevenueList = []
@@ -86,15 +91,15 @@ const getTypeStat = async (req, res) => {
     oneWeekAgo.setHours(0, 0, 0, 0)
     endAt = oneWeekAgo.getTime()
   }
-  if (startAt < endAt) {
+  if (parseInt(startAt) < parseInt(endAt)) {
     const temp = startAt
     startAt = endAt
     endAt = temp
   }
   const statDTO = {
     uid: uid,
-    startAt: startAt,
-    endAt: endAt,
+    startAt: parseInt(startAt),
+    endAt: parseInt(endAt),
   }
   try {
     const typeRevenueList = []
