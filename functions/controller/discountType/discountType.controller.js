@@ -36,11 +36,11 @@ const add = async (req, res) => {
         }
       }
     }
-    const discountType = await addDiscountType(discountTypeDTO)
+    const discountTypeId = await addDiscountType(discountTypeDTO)
     return res.status(200).send({
       success: true,
       message: "成功新增折扣類型",
-      discountList: discountType,
+      discountTypeId: discountTypeId,
     })
   } catch (error) {
     console.log(error)
@@ -60,13 +60,13 @@ const get = async (req, res) => {
       return res.status(200).send({
         success: true,
         message: "您沒有任何折扣類型",
-        discountList: [],
+        discountTypeList: [],
       })
     }
     return res.status(200).send({
       success: true,
       message: "成功取得折扣類型",
-      discountList: discountTypeList,
+      discountTypeList: discountTypeList,
     })
   } catch (error) {
     console.log(error)

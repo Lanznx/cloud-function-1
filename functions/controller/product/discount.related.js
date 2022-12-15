@@ -27,7 +27,6 @@ const addNewDiscountTypes = async (discountTypeList, discountTypes, uid)=>{
     }
     if (!discountTypeList.includes(discountTypeDTO["name"])) {
       await addDiscountType(discountTypeDTO)
-      console.log("add new discount type")
     }
   }
 }
