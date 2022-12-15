@@ -47,8 +47,24 @@ const getTagListModel = async (uid) => {
   }
 }
 
+const deleteTagModel = async (tagDTO) => {
+  const { uid, name } = tagDTO
+  try {
+    const snapShot = await db.collection("tags")
+      .where("name", "==", name)
+      .where("uid", "==", uid)
+      .get()
+    snapShot.forEach((doc) => {
+      doc.ref.delete()
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 module.exports = {
   addTagModel,
   getTagListModel,
   getTagModel,
+  deleteTagModel,
 }

@@ -72,7 +72,11 @@ const getOrderListWithGap = async (gapDTO) => {
         .get()
       const orderList = []
       docRef.forEach((doc)=>{
-        orderList.push(doc.data())
+        const orderDTO = {
+          orderId: doc.id,
+          ...doc.data(),
+        }
+        orderList.push(orderDTO)
       })
       return orderList
     }
@@ -86,7 +90,11 @@ const getOrderListWithGap = async (gapDTO) => {
       .get()
     const orderList = []
     docRef.forEach((doc)=>{
-      orderList.push(doc.data())
+      const orderDTO = {
+        orderId: doc.id,
+        ...doc.data(),
+      }
+      orderList.push(orderDTO)
     })
     return orderList
   } catch (error) {
