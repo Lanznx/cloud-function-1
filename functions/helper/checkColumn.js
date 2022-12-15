@@ -3,6 +3,8 @@ const checkColumn = (dto, optionalKeys) => {
   for (let i = 0; i < dtoKeys.length; i++) {
     if (dto[dtoKeys[i]] === undefined && !optionalKeys.includes(dtoKeys[i])) {
       return dtoKeys[i]
+    } else if (!optionalKeys.includes(dtoKeys[i]) && dto[dtoKeys[i]] === "") {
+      return dtoKeys[i]
     }
   }
 }
