@@ -86,6 +86,11 @@ const getTypeStat = async (req, res) => {
     oneWeekAgo.setHours(0, 0, 0, 0)
     endAt = oneWeekAgo.getTime()
   }
+  if (startAt < endAt) {
+    const temp = startAt
+    startAt = endAt
+    endAt = temp
+  }
   const statDTO = {
     uid: uid,
     startAt: startAt,
@@ -165,7 +170,79 @@ const getTypeStat = async (req, res) => {
     })
   }
 }
+
+const getStaffStat = async (req, res) => {
+  const { uid } = req.middleware
+  let { startAt, endAt } = req.query
+  if (!startAt) {
+    startAt = Date.now()
+  }
+  if (!endAt) {
+    const oneWeekAgo = new Date()
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+    oneWeekAgo.setHours(0, 0, 0, 0)
+    endAt = oneWeekAgo.getTime()
+  }
+  if (parseInt(startAt) < parseInt(endAt)) {
+    const temp = startAt
+    startAt = endAt
+    endAt = temp
+  }
+  const statDTO = {
+    uid: uid,
+    startAt: parseInt(startAt),
+    endAt: parseInt(endAt),
+  }
+  try {
+    const staffRevenueList = []
+    const orderList = await getOrderListWithGap(statDTO)
+    if (orderList.length === 0) {
+      return res.status(400).send({
+        success: false,
+        message: "您尚未建立任何訂單",
+      })
+    }
+    // fill staff revenue list
+    orderList.forEach((order) => {
+      const isStaffExist = staffRevenueList
+        .find((staff) => staff["staffName"] === order["staffName"])
+      if (isStaffExist) {
+        staffRevenueList.forEach((staff) => {
+          if (staff["staffName"] === order["staffName"]) {
+            staff["revenue"] += order["totalPrice"]
+          }
+        })
+        return
+      }
+      staffRevenueList.push({
+        staffName: order["staffName"],
+        revenue: order["totalPrice"],
+      })
+    }
+    )
+    if (staffRevenueList.length === 0) {
+      return res.status(200).send({
+        success: true,
+        message: "員工統計資料為空",
+        data: staffRevenueList,
+      })
+    }
+
+    return res.status(200).send({
+      success: true,
+      message: "成功取得員工統計資料",
+      data: staffRevenueList,
+    })
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: "伺服器錯誤，請聯絡客服",
+      err: error,
+    })
+  }
+}
 module.exports = {
   getProductStat,
   getTypeStat,
+  getStaffStat,
 }
