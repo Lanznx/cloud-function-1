@@ -44,19 +44,23 @@ const getProductByPIDModel = async (pid) => {
   }
 }
 
-const getProductByNameModel = async (uid, productName) => {
+const getProductByNameModel = async (uid, productName, spec) => {
   try {
     const docRef = await db
       .collection("products")
       .where("uid", "==", uid)
       .where("name", "==", productName)
+      .where("spec", "==", spec)
       .get()
     if (docRef.empty) {
       return -1
     }
-    let product = {}
+    const product = []
     docRef.forEach((doc) => {
-      product = doc.data()
+      product.push({
+        pid: doc.id,
+        ...doc.data(),
+      })
     })
     return product
   } catch (error) {

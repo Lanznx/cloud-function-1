@@ -38,11 +38,15 @@ const add = async (req, res) => {
   }
 
   try {
-    const product = await getProductByNameModel(uid, name)
+    const product = await getProductByNameModel(
+      uid,
+      addProductDTO["name"],
+      addProductDTO["spec"]
+    )
     if (product !== -1) {
       return res.status(400).send({
         success: false,
-        message: "產品名稱已存在",
+        message: "產品已存在",
       })
     }
 
