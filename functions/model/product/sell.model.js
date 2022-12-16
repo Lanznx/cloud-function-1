@@ -33,10 +33,12 @@ const getOrderListWithPagination = async (paginationDTO) => {
         .get()
       const orderList = []
       docRef.forEach((doc)=>{
-        orderList.push({
+        const orderDTO = {
           orderId: doc.id,
           ...doc.data(),
-        })
+        }
+        delete orderDTO["uid"]
+        orderList.push(orderDTO)
       })
       return orderList
     }
@@ -48,10 +50,12 @@ const getOrderListWithPagination = async (paginationDTO) => {
       .get()
     const orderList = []
     docRef.forEach((doc)=>{
-      orderList.push({
+      const orderDTO = {
         orderId: doc.id,
         ...doc.data(),
-      })
+      }
+      delete orderDTO["uid"]
+      orderList.push(orderDTO)
     })
     return orderList
   } catch (error) {
@@ -76,6 +80,7 @@ const getOrderListWithGap = async (gapDTO) => {
           orderId: doc.id,
           ...doc.data(),
         }
+        delete orderDTO["uid"]
         orderList.push(orderDTO)
       })
       return orderList
@@ -94,6 +99,7 @@ const getOrderListWithGap = async (gapDTO) => {
         orderId: doc.id,
         ...doc.data(),
       }
+      delete orderDTO["uid"]
       orderList.push(orderDTO)
     })
     return orderList
