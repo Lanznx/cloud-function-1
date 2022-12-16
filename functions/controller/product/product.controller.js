@@ -13,12 +13,13 @@ const typeController = require("../type/type.controller")
 const add = async (req, res) => {
   const { uid } = req.middleware
 
-  let { name, price, type } = req.body
+  let { name, price, type, item } = req.body
   price = parseInt(price)
   const addProductDTO = {
     name: name,
     price: price,
     type: type,
+    item: item,
     uid: uid,
   }
   const missedKey = checkColumn(addProductDTO, [])
