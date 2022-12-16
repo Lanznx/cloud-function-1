@@ -13,15 +13,16 @@ const typeController = require("../type/type.controller")
 const add = async (req, res) => {
   const { uid } = req.middleware
 
-  let { name, price, type } = req.body
+  let { name, price, type, spec } = req.body
   price = parseInt(price)
   const addProductDTO = {
     name: name,
     price: price,
     type: type,
+    spec: spec,
     uid: uid,
   }
-  const missedKey = checkColumn(addProductDTO, [])
+  const missedKey = checkColumn(addProductDTO, ["spec"])
   if (missedKey) {
     return res.status(400).send({
       success: false,
@@ -32,14 +33,20 @@ const add = async (req, res) => {
       success: false,
       message: "價錢應為正數",
     })
+  } else if (addProductDTO["spec"] === undefined) {
+    addProductDTO["spec"] = ""
   }
 
   try {
-    const product = await getProductByNameModel(uid, name)
+    const product = await getProductByNameModel(
+      uid,
+      addProductDTO["name"],
+      addProductDTO["spec"]
+    )
     if (product !== -1) {
       return res.status(400).send({
         success: false,
-        message: "產品名稱已存在",
+        message: "產品已存在",
       })
     }
 
@@ -148,16 +155,17 @@ const remove = async (req, res) => {
 const update = async (req, res) => {
   const { uid } = req.middleware
   const { pid } = req.query
-  let { name, price, type } = req.body
+  let { name, price, type, spec } = req.body
   price = parseInt(price)
   const updateProductDTO = {
-    pid: pid,
     name: name,
     price: price,
     type: type,
+    spec: spec,
+    pid: pid,
     uid: uid,
   }
-  const missedKey = checkColumn(updateProductDTO, [])
+  const missedKey = checkColumn(updateProductDTO, ["spec"])
   if (missedKey) {
     return res.status(400).send({
       success: false,
@@ -168,9 +176,22 @@ const update = async (req, res) => {
       success: false,
       message: "價錢應為正數",
     })
+  } else if (updateProductDTO["spec"] === undefined) {
+    updateProductDTO["spec"] = ""
   }
 
   try {
+    const productInDB = await getProductByNameModel(
+      updateProductDTO["uid"],
+      updateProductDTO["name"],
+      updateProductDTO["spec"],
+    )
+    if (productInDB !== -1 && productInDB["pid"] !== updateProductDTO["pid"]) {
+      return res.status(400).send({
+        success: false,
+        message: "此產品已存在",
+      })
+    }
     const product = await getProductByPIDModel(pid)
     if (product === -1) {
       return res.status(400).send({
