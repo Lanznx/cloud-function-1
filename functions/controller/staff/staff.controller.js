@@ -14,7 +14,7 @@ const add = async (req, res) => {
   const staffDTO = {
     uid: uid,
     name: name,
-    phoneNumber: toString(phoneNumber),
+    phoneNumber: phoneNumber.toString(),
     email: email,
   }
 
