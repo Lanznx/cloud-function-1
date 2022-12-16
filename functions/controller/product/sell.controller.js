@@ -82,8 +82,6 @@ const add = async (req, res) => {
     // add discountTypes to note
     const newNote = addNewNote(note, discountTypes)
     cleanOrderDTO["note"] = newNote
-    console.log(cleanOrderDTO["note"], "cleanOrderDTO['note']")
-    console.log(newNote, "newNote")
 
     // 新增不存在於資料庫的 discountType
     const discountTypeList = await getDiscountTypeList(uid)
@@ -96,7 +94,6 @@ const add = async (req, res) => {
       discount += discountType["discount"]
     }
     cleanOrderDTO["discount"] = discount
-    console.log(cleanOrderDTO, "cleanOrderDTO")
   }
   // 無論如何都要移除 discountTypes
   delete cleanOrderDTO["discountTypes"]
