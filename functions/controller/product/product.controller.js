@@ -22,7 +22,7 @@ const add = async (req, res) => {
     spec: spec,
     uid: uid,
   }
-  const missedKey = checkColumn(addProductDTO, [])
+  const missedKey = checkColumn(addProductDTO, ["spec"])
   if (missedKey) {
     return res.status(400).send({
       success: false,
@@ -33,6 +33,8 @@ const add = async (req, res) => {
       success: false,
       message: "價錢應為正數",
     })
+  } else if (addProductDTO["spec"] === undefined) {
+    addProductDTO["spec"] = ""
   }
 
   try {
@@ -159,7 +161,7 @@ const update = async (req, res) => {
     pid: pid,
     uid: uid,
   }
-  const missedKey = checkColumn(updateProductDTO, [])
+  const missedKey = checkColumn(updateProductDTO, ["spec"])
   if (missedKey) {
     return res.status(400).send({
       success: false,
@@ -170,7 +172,10 @@ const update = async (req, res) => {
       success: false,
       message: "價錢應為正數",
     })
+  } else if (updateProductDTO["spec"] === undefined) {
+    updateProductDTO["spec"] = ""
   }
+
   try {
     const product = await getProductByPIDModel(pid)
     if (product === -1) {
