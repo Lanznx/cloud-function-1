@@ -25,7 +25,18 @@ const addNewDiscountTypes = async (discountTypeList, discountTypes, uid)=>{
       discount: parseInt(discountType["discount"]),
       note: "",
     }
-    if (!discountTypeList.includes(discountTypeDTO["name"])) {
+    let isExist = false
+    for (let j = 0; j < discountTypeList.length; j++) {
+      const discountTypeInDB = discountTypeList[j]
+      if (
+        discountTypeInDB["name"] === discountTypeDTO["name"] &&
+        discountTypeInDB["discount"] === discountTypeDTO["discount"]
+      ) {
+        isExist = true
+        break
+      }
+    }
+    if (!isExist) {
       await addDiscountType(discountTypeDTO)
     }
   }
