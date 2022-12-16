@@ -181,6 +181,17 @@ const update = async (req, res) => {
   }
 
   try {
+    const productInDB = await getProductByNameModel(
+      updateProductDTO["uid"],
+      updateProductDTO["name"],
+      updateProductDTO["spec"],
+    )
+    if (productInDB !== -1 && productInDB["pid"] !== updateProductDTO["pid"]) {
+      return res.status(400).send({
+        success: false,
+        message: "此產品已存在",
+      })
+    }
     const product = await getProductByPIDModel(pid)
     if (product === -1) {
       return res.status(400).send({

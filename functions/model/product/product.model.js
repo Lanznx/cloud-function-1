@@ -21,9 +21,10 @@ const getProductListModel = async (uid) => {
       const pid = doc.id
       productList.push({
         pid: pid,
+        price: product["price"],
         name: product["name"],
         type: product["type"],
-        price: product["price"],
+        spec: product["spec"],
       })
     })
     return productList
@@ -62,7 +63,7 @@ const getProductByNameModel = async (uid, productName, spec) => {
         ...doc.data(),
       })
     })
-    return product
+    return product[0]
   } catch (error) {
     console.log(error)
   }
