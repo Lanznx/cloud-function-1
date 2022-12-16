@@ -14,7 +14,7 @@ const add = async (req, res) => {
   const staffDTO = {
     uid: uid,
     name: name,
-    phoneNumber: phoneNumber,
+    phoneNumber: phoneNumber.toString(),
     email: email,
   }
 
@@ -24,14 +24,18 @@ const add = async (req, res) => {
       success: false,
       message: `麻煩提供 ${staffMissedKey}`,
     })
-  } else if (!isString(phoneNumber)) {
-    return res.status(400).send({
-      success: false,
-      message: "電話號碼的型別應為字串",
-    })
   }
 
   try {
+    const allStaff = await getAllStaffModel(uid)
+    allStaff.forEach((s) => {
+      if (s["name"] === name) {
+        return res.status(400).send({
+          success: false,
+          message: "員工已存在",
+        })
+      }
+    })
     const sid = await addStaffModel(staffDTO)
     return res.status(200).send({
       success: true,
