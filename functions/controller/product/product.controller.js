@@ -13,13 +13,13 @@ const typeController = require("../type/type.controller")
 const add = async (req, res) => {
   const { uid } = req.middleware
 
-  let { name, price, type, item } = req.body
+  let { name, price, type, spec } = req.body
   price = parseInt(price)
   const addProductDTO = {
     name: name,
     price: price,
     type: type,
-    item: item,
+    spec: spec,
     uid: uid,
   }
   const missedKey = checkColumn(addProductDTO, [])
@@ -149,13 +149,14 @@ const remove = async (req, res) => {
 const update = async (req, res) => {
   const { uid } = req.middleware
   const { pid } = req.query
-  let { name, price, type } = req.body
+  let { name, price, type, spec } = req.body
   price = parseInt(price)
   const updateProductDTO = {
-    pid: pid,
     name: name,
     price: price,
     type: type,
+    spec: spec,
+    pid: pid,
     uid: uid,
   }
   const missedKey = checkColumn(updateProductDTO, [])
@@ -170,7 +171,6 @@ const update = async (req, res) => {
       message: "價錢應為正數",
     })
   }
-
   try {
     const product = await getProductByPIDModel(pid)
     if (product === -1) {
