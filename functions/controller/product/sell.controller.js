@@ -36,6 +36,7 @@ const add = async (req, res) => {
     discountTypes: discountTypes,
     totalPrice: totalPrice,
     note: note,
+    discount: 0,
   }
 
   const optionalKeys = ["tagList", "note", "discountTypes"]
@@ -88,12 +89,10 @@ const add = async (req, res) => {
     addNewDiscountTypes(discountTypeList, discountTypes, uid)
 
     // 計算 discount
-    let discount = 0
     for (let i = 0; i < discountTypes.length; i++) {
       const discountType = discountTypes[i]
-      discount += discountType["discount"]
+      cleanOrderDTO["discount"] += discountType["discount"]
     }
-    cleanOrderDTO["discount"] = discount
   }
   // 無論如何都要移除 discountTypes
   delete cleanOrderDTO["discountTypes"]
