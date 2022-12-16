@@ -35,7 +35,7 @@ const addNewNote = (note, discountTypes) => {
   let newNote = ""
   for (let i = 0; i < discountTypes.length; i++) {
     const discountType = discountTypes[i]
-    newNote += `${discountType["name"]},$${discountType["discount"]}`
+    newNote += `${discountType["name"]},$${discountType["discount"]}\n`
   }
   newNote += note
   return newNote
