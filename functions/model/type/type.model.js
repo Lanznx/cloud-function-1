@@ -47,8 +47,24 @@ const getTypeListModel = async (uid) => {
   }
 }
 
+const deleteTypeModel = async (uid, name) => {
+  try {
+    const snapShot = await db.collection("types")
+      .where("name", "==", name)
+      .where("uid", "==", uid)
+      .get()
+
+    snapShot.forEach((doc) => {
+      doc.ref.delete()
+    })
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 module.exports = {
   addTypeModel,
   getTypeListModel,
   getTypeModel,
+  deleteTypeModel,
 }
