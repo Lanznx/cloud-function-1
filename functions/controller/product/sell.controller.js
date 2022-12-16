@@ -230,6 +230,7 @@ const update = async (req, res) => {
     discountTypes: discountTypes,
     totalPrice: totalPrice,
     note: note,
+    discount: 0,
   }
 
   const optionalKeys = ["tagList", "note", "discountTypes"]
@@ -274,20 +275,23 @@ const update = async (req, res) => {
       message: "折扣應為正數",
     })
   }
+  // add discountTypes to note
+  const newNote = addNewNote(note, discountTypes)
+  cleanOrderDTO["note"] = newNote
 
+  // 新增不存在於資料庫的 discountType
+  const discountTypeList = await getDiscountTypeList(uid)
+  addNewDiscountTypes(discountTypeList, discountTypes, uid)
+
+  // 計算 discount
+  for (let i = 0; i < discountTypes.length; i++) {
+    const discountType = discountTypes[i]
+    cleanOrderDTO["discount"] += discountType["discount"]
+  }
+
+  // 無論如何都要移除 discountTypes
+  delete cleanOrderDTO["discountTypes"]
   try {
-    // add discountTypes to note
-    const newNote = addNewNote(note, discountTypes)
-    cleanOrderDTO["note"] = newNote
-
-    // 如果 discountTypes 不存在於資料庫，則新增
-    const discountTypeList = await getDiscountTypeList(uid)
-    addNewDiscountTypes(discountTypeList, discountTypes, uid)
-
-    if (tagList.length !== 0) {
-      addNewTag(tagList, uid)
-    }
-
     const order = await getOrderModel(orderId)
     if (order === -1) {
       return res.status(200).send({

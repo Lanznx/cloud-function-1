@@ -67,7 +67,10 @@ const createProfile = async (req, res) => {
     }
 
     await createProfileModel(uid, profileDto)
-    return res.status(201).send({ success: true })
+    return res.status(201).send({
+      success: true,
+      message: "建立個人檔案成功",
+    })
   } catch (error) {
     return res.status(500).send({
       success: false,
@@ -112,7 +115,10 @@ const updateProfile = async (req, res) => {
     }
 
     await updateProfileModel(uid, profileDto)
-    return res.status(204).send({ success: true })
+    return res.status(200).send({
+      success: true,
+      message: "更新成功",
+    })
   } catch (error) {
     return res.status(500).send({
       success: false,

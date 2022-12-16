@@ -12,7 +12,7 @@ const cors = require("cors")({
   origin: [
     "https://ceranapos.ebg.tw",
     "https://ceranapos.web.app",
-    "https://pos.cerana.tech/",
+    "https://pos.cerana.tech",
     "http://localhost:5173",
   ],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",

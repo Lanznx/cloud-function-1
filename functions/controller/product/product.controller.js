@@ -13,15 +13,16 @@ const typeController = require("../type/type.controller")
 const add = async (req, res) => {
   const { uid } = req.middleware
 
-  let { name, price, type } = req.body
+  let { name, price, type, spec } = req.body
   price = parseInt(price)
   const addProductDTO = {
     name: name,
     price: price,
     type: type,
+    spec: spec,
     uid: uid,
   }
-  const missedKey = checkColumn(addProductDTO, [])
+  const missedKey = checkColumn(addProductDTO, ["spec"])
   if (missedKey) {
     return res.status(400).send({
       success: false,
@@ -32,6 +33,8 @@ const add = async (req, res) => {
       success: false,
       message: "價錢應為正數",
     })
+  } else if (addProductDTO["spec"] === undefined) {
+    addProductDTO["spec"] = ""
   }
 
   try {
@@ -148,16 +151,17 @@ const remove = async (req, res) => {
 const update = async (req, res) => {
   const { uid } = req.middleware
   const { pid } = req.query
-  let { name, price, type } = req.body
+  let { name, price, type, spec } = req.body
   price = parseInt(price)
   const updateProductDTO = {
-    pid: pid,
     name: name,
     price: price,
     type: type,
+    spec: spec,
+    pid: pid,
     uid: uid,
   }
-  const missedKey = checkColumn(updateProductDTO, [])
+  const missedKey = checkColumn(updateProductDTO, ["spec"])
   if (missedKey) {
     return res.status(400).send({
       success: false,
@@ -168,6 +172,8 @@ const update = async (req, res) => {
       success: false,
       message: "價錢應為正數",
     })
+  } else if (updateProductDTO["spec"] === undefined) {
+    updateProductDTO["spec"] = ""
   }
 
   try {

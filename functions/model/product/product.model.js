@@ -80,6 +80,7 @@ const updateProductModel = async (productDTO) => {
       type: productDTO["type"],
       price: productDTO["price"],
       uid: productDTO["uid"],
+      spec: productDTO["spec"],
     })
   } catch (error) {
     console.log(error)
