@@ -21,9 +21,10 @@ const getProductListModel = async (uid) => {
       const pid = doc.id
       productList.push({
         pid: pid,
+        price: product["price"],
         name: product["name"],
         type: product["type"],
-        price: product["price"],
+        spec: product["spec"],
       })
     })
     return productList
@@ -44,21 +45,25 @@ const getProductByPIDModel = async (pid) => {
   }
 }
 
-const getProductByNameModel = async (uid, productName) => {
+const getProductByNameModel = async (uid, productName, spec) => {
   try {
     const docRef = await db
       .collection("products")
       .where("uid", "==", uid)
       .where("name", "==", productName)
+      .where("spec", "==", spec)
       .get()
     if (docRef.empty) {
       return -1
     }
-    let product = {}
+    const product = []
     docRef.forEach((doc) => {
-      product = doc.data()
+      product.push({
+        pid: doc.id,
+        ...doc.data(),
+      })
     })
-    return product
+    return product[0]
   } catch (error) {
     console.log(error)
   }

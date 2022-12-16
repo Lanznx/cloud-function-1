@@ -38,11 +38,15 @@ const add = async (req, res) => {
   }
 
   try {
-    const product = await getProductByNameModel(uid, name)
+    const product = await getProductByNameModel(
+      uid,
+      addProductDTO["name"],
+      addProductDTO["spec"]
+    )
     if (product !== -1) {
       return res.status(400).send({
         success: false,
-        message: "產品名稱已存在",
+        message: "產品已存在",
       })
     }
 
@@ -177,6 +181,17 @@ const update = async (req, res) => {
   }
 
   try {
+    const productInDB = await getProductByNameModel(
+      updateProductDTO["uid"],
+      updateProductDTO["name"],
+      updateProductDTO["spec"],
+    )
+    if (productInDB !== -1 && productInDB["pid"] !== updateProductDTO["pid"]) {
+      return res.status(400).send({
+        success: false,
+        message: "此產品已存在",
+      })
+    }
     const product = await getProductByPIDModel(pid)
     if (product === -1) {
       return res.status(400).send({
