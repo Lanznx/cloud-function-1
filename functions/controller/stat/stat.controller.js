@@ -118,9 +118,12 @@ const getTypeStat = async (req, res) => {
     // init product revenue list
     productList.forEach((product) => {
       productRevenueList.push({
+        pid: product["pid"],
         productName: product["name"],
+        spec: product["spec"],
         type: product["type"],
         revenue: 0,
+        amount: 0,
       })
     })
     const orderList = await getOrderListWithGap(statDTO)
@@ -134,8 +137,9 @@ const getTypeStat = async (req, res) => {
     orderList.forEach((order) => {
       order["productList"].forEach((product) => {
         productRevenueList.forEach((p) => {
-          if (p["productName"] === product["productName"]) {
+          if (p["pid"] === product["pid"]) {
             p["revenue"] += product["price"] * product["amount"]
+            p["amount"] += product["amount"]
           }
         })
       })
@@ -149,6 +153,7 @@ const getTypeStat = async (req, res) => {
         typeRevenueList.forEach((type) => {
           if (type["typeName"] === product["type"]) {
             type["revenue"] += product["revenue"]
+            type["amount"] += product["amount"]
           }
         })
         return
@@ -156,6 +161,7 @@ const getTypeStat = async (req, res) => {
       typeRevenueList.push({
         typeName: product["type"],
         revenue: product["revenue"],
+        amount: product["amount"],
       })
     })
     if (typeRevenueList.length === 0) {
