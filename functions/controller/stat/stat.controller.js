@@ -225,6 +225,7 @@ const getStaffStat = async (req, res) => {
         staffRevenueList.forEach((staff) => {
           if (staff["staffName"] === order["staffName"]) {
             staff["revenue"] += order["totalPrice"]
+            staff["amount"] += 1
           }
         })
         return
@@ -232,6 +233,7 @@ const getStaffStat = async (req, res) => {
       staffRevenueList.push({
         staffName: order["staffName"],
         revenue: order["totalPrice"],
+        amount: 1,
       })
     }
     )
