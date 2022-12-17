@@ -36,8 +36,11 @@ const getProductStat = async (req, res) => {
     }
     productList.forEach((product) => {
       productRevenueList.push({
+        pid: product["pid"],
         productName: product["name"],
+        spec: product["spec"],
         revenue: 0,
+        amount: 0,
       })
     })
     const orderList = await getOrderListWithGap(statDTO)
@@ -51,8 +54,9 @@ const getProductStat = async (req, res) => {
     orderList.forEach((order) => {
       order["productList"].forEach((product) => {
         productRevenueList.forEach((p) => {
-          if (p["productName"] === product["productName"]) {
+          if (p["pid"] === product["pid"]) {
             p["revenue"] += product["price"] * product["amount"]
+            p["amount"] += product["amount"]
           }
         })
       })
