@@ -42,6 +42,7 @@ const createProfile = async (req, res) => {
     phoneNumber: phoneNumber,
     howToKnowUs: howToKnowUs,
     email: email,
+    createTime: new Date().getTime(),
   }
   const missedKey = checkColumn(profileDto, [])
   if (missedKey) {
