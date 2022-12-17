@@ -15,7 +15,7 @@ const add = async (req, res) => {
     discount: parseInt(discount),
     note: note,
   }
-  const discountTypeMissedKey = checkColumn(discountTypeDTO, [])
+  const discountTypeMissedKey = checkColumn(discountTypeDTO, ["note"])
   if (discountTypeMissedKey) {
     return res.status(400).send({
       success: false,

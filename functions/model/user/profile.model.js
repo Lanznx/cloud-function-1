@@ -20,7 +20,7 @@ const createProfileModel = async (uid, user) => {
 }
 const updateProfileModel = async (uid, user) => {
   try {
-    await db.collection("users").doc(uid).set(user)
+    await db.collection("users").doc(uid).update(user)
   } catch (error) {
     console.log(error)
   }

@@ -36,8 +36,11 @@ const getProductStat = async (req, res) => {
     }
     productList.forEach((product) => {
       productRevenueList.push({
+        pid: product["pid"],
         productName: product["name"],
+        spec: product["spec"],
         revenue: 0,
+        amount: 0,
       })
     })
     const orderList = await getOrderListWithGap(statDTO)
@@ -51,8 +54,9 @@ const getProductStat = async (req, res) => {
     orderList.forEach((order) => {
       order["productList"].forEach((product) => {
         productRevenueList.forEach((p) => {
-          if (p["productName"] === product["productName"]) {
+          if (p["pid"] === product["pid"]) {
             p["revenue"] += product["price"] * product["amount"]
+            p["amount"] += product["amount"]
           }
         })
       })
@@ -114,9 +118,12 @@ const getTypeStat = async (req, res) => {
     // init product revenue list
     productList.forEach((product) => {
       productRevenueList.push({
+        pid: product["pid"],
         productName: product["name"],
+        spec: product["spec"],
         type: product["type"],
         revenue: 0,
+        amount: 0,
       })
     })
     const orderList = await getOrderListWithGap(statDTO)
@@ -130,8 +137,9 @@ const getTypeStat = async (req, res) => {
     orderList.forEach((order) => {
       order["productList"].forEach((product) => {
         productRevenueList.forEach((p) => {
-          if (p["productName"] === product["productName"]) {
+          if (p["pid"] === product["pid"]) {
             p["revenue"] += product["price"] * product["amount"]
+            p["amount"] += product["amount"]
           }
         })
       })
@@ -145,6 +153,7 @@ const getTypeStat = async (req, res) => {
         typeRevenueList.forEach((type) => {
           if (type["typeName"] === product["type"]) {
             type["revenue"] += product["revenue"]
+            type["amount"] += product["amount"]
           }
         })
         return
@@ -152,6 +161,7 @@ const getTypeStat = async (req, res) => {
       typeRevenueList.push({
         typeName: product["type"],
         revenue: product["revenue"],
+        amount: product["amount"],
       })
     })
     if (typeRevenueList.length === 0) {
@@ -215,6 +225,7 @@ const getStaffStat = async (req, res) => {
         staffRevenueList.forEach((staff) => {
           if (staff["staffName"] === order["staffName"]) {
             staff["revenue"] += order["totalPrice"]
+            staff["amount"] += 1
           }
         })
         return
@@ -222,6 +233,7 @@ const getStaffStat = async (req, res) => {
       staffRevenueList.push({
         staffName: order["staffName"],
         revenue: order["totalPrice"],
+        amount: 1,
       })
     }
     )
@@ -250,14 +262,27 @@ const getStaffStat = async (req, res) => {
 const getLineChart = async (req, res) => {
   const { uid } = req.middleware
   let { startAt, endAt, unit } = req.query
+  if (!unit) {
+    unit = "hour"
+  }
   if (!startAt) {
     startAt = Date.now()
   }
-  if (!endAt) {
+  if (unit === "hour" && endAt === undefined) {
+    startAt = Date.now()
     const oneWeekAgo = new Date()
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-    // oneWeekAgo.setHours(0, 0, 0, 0)
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 1)
     endAt = oneWeekAgo.getTime()
+  } else if (unit === "day" && endAt === undefined) {
+    startAt = Date.now()
+    const oneMonthAgo = new Date()
+    oneMonthAgo.setDate(oneMonthAgo.getDate() - 7)
+    endAt = oneMonthAgo.getTime()
+  } else if (unit === "week" && endAt === undefined) {
+    startAt = Date.now()
+    const oneYearAgo = new Date()
+    oneYearAgo.setDate(oneYearAgo.getDate() - 30)
+    endAt = oneYearAgo.getTime()
   }
   if (parseInt(startAt) < parseInt(endAt)) {
     const temp = startAt
@@ -265,9 +290,6 @@ const getLineChart = async (req, res) => {
     endAt = temp
   }
 
-  if (!unit) {
-    unit = "hour"
-  }
   const statDTO = {
     uid: uid,
     startAt: parseInt(startAt),
@@ -290,6 +312,7 @@ const getLineChart = async (req, res) => {
         lineChartList.push({
           time: i,
           revenue: 0,
+          amount: 0,
         })
       }
       orderList.forEach((order) => {
@@ -299,6 +322,7 @@ const getLineChart = async (req, res) => {
         lineChartList.forEach((chart) => {
           if (chart["time"] === orderHour) {
             chart["revenue"] += order["totalPrice"]
+            chart["amount"] += 1
           }
         })
       })
@@ -308,6 +332,7 @@ const getLineChart = async (req, res) => {
         lineChartList.push({
           time: i,
           revenue: 0,
+          amount: 0,
         })
       }
       orderList.forEach((order) => {
@@ -317,6 +342,7 @@ const getLineChart = async (req, res) => {
         lineChartList.forEach((chart) => {
           if (chart["time"] === orderDay) {
             chart["revenue"] += order["totalPrice"]
+            chart["amount"] += 1
           }
         })
       })
@@ -326,6 +352,7 @@ const getLineChart = async (req, res) => {
         lineChartList.push({
           time: i,
           revenue: 0,
+          amount: 0,
         })
       }
       orderList.forEach((order) => {
@@ -346,6 +373,7 @@ const getLineChart = async (req, res) => {
         lineChartList.forEach((chart) => {
           if (chart["time"] === orderWeek) {
             chart["revenue"] += order["totalPrice"]
+            chart["amount"] += 1
           }
         })
       })
