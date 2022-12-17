@@ -13,6 +13,7 @@ const cors = require("cors")({
     "https://ceranapos.ebg.tw",
     "https://ceranapos.web.app",
     "https://pos.cerana.tech",
+    "https://ledger.cerana.tech",
     "http://localhost:5173",
   ],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
