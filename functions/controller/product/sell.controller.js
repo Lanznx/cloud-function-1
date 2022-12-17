@@ -73,11 +73,6 @@ const add = async (req, res) => {
         success: false,
         message: "麻煩提供折扣類型名稱及折扣",
       })
-    } else if (isValid === -2) {
-      return res.status(400).send({
-        success: false,
-        message: "折扣應為正數",
-      })
     }
 
     // add discountTypes to note

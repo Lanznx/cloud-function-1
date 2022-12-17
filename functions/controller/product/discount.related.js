@@ -10,7 +10,7 @@ const addNewDiscountTypes = async (discountTypeList, discountTypes, uid)=>{
       const discountTypeDTO = {
         uid: uid,
         name: discountType["name"],
-        discount: parseInt(discountType["discount"]),
+        discount: Math.abs(parseInt(discountType["discount"])),
         note: "",
       }
       await addDiscountType(discountTypeDTO)
@@ -22,7 +22,7 @@ const addNewDiscountTypes = async (discountTypeList, discountTypes, uid)=>{
     const discountTypeDTO = {
       uid: uid,
       name: discountType["name"],
-      discount: parseInt(discountType["discount"]),
+      discount: Math.abs(parseInt(discountType["discount"])),
       note: "",
     }
     let isExist = false
@@ -62,8 +62,6 @@ const isDiscountTypesValid = (discountTypes) => {
     const discountTypeMissedKey = checkColumn(discountTypeDTO, [])
     if (discountTypeMissedKey) {
       return -1
-    } else if (discountType["discount"] < 0) {
-      return -2
     }
   }
   return true
