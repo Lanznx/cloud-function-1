@@ -1,9 +1,9 @@
 const express = require("express")
 const router = new express.Router()
 const { auth } = require("../middleware/auth")
-const preorder = require("../controller/preorder/preorder.controller")
-router.post("/", auth, preorder.add)
-router.put("/", auth, preorder.update)
-router.get("/", auth, preorder.get)
+const form = require("../controller/preorder/form.controller")
+router.post("/", auth, form.add)
+router.put("/", auth, form.update)
+router.get("/", auth, form.get)
 
 module.exports = router

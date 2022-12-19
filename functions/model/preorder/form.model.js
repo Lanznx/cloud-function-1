@@ -1,6 +1,6 @@
 const { db } = require("../../utils/admin")
 
-const addPreorderModel = async (preorderDTO) => {
+const addFormModel = async (preorderDTO) => {
   try {
     const docRef = await db.collection("preorders").add(preorderDTO)
     return docRef.id
@@ -10,13 +10,16 @@ const addPreorderModel = async (preorderDTO) => {
   }
 }
 
-const updatePreorderModel = async (uid, preorderDTO) => {
+const updateFormModel = async (uid, preorderDTO) => {
   try {
     const docRef = await db
       .collection("preorders")
       .where("uid", "==", uid)
       .get()
     const preorderID = docRef.docs[0].id
+    await db.collection("preorders")
+      .doc(preorderID)
+      .update(preorderDTO)
 
     return preorderID
   } catch (error) {
@@ -25,7 +28,7 @@ const updatePreorderModel = async (uid, preorderDTO) => {
   }
 }
 
-const getPreorderModel = async (uid) => {
+const getFormModel = async (uid) => {
   try {
     const docRef = await db
       .collection("preorders")
@@ -34,9 +37,14 @@ const getPreorderModel = async (uid) => {
     if (docRef.empty) {
       return -1
     }
-    const preorder = docRef.docs[0].data()
+    const form = {
+      "preorder-form": docRef.docs[0].id,
+      "enable": docRef.docs[0].data().enable,
+      "storeName": docRef.docs[0].data().storeName,
+      "productList": docRef.docs[0].data().productList,
+    }
 
-    return preorder
+    return form
   } catch (error) {
     console.log(error)
     return -2
@@ -44,7 +52,7 @@ const getPreorderModel = async (uid) => {
 }
 
 module.exports = {
-  addPreorderModel,
-  updatePreorderModel,
-  getPreorderModel,
+  addFormModel,
+  updateFormModel,
+  getFormModel,
 }

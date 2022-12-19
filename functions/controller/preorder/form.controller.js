@@ -1,15 +1,15 @@
 const { checkColumn } = require("../../helper/checkColumn.js")
 const {
-  addPreorderModel,
-  updatePreorderModel,
-  getPreorderModel,
-} = require("../../model/preorder/preorder.model.js")
+  addFormModel,
+  updateFormModel,
+  getFormModel,
+} = require("../../model/preorder/form.model.js")
 
 const get = async (req, res) => {
   const { uid } = req.middleware
   try {
-    const preorder = await getPreorderModel(uid)
-    if (preorder === -1) {
+    const form = await getFormModel(uid)
+    if (form === -1) {
       return res.status(400).send({
         success: false,
         message: "預購表單為空",
@@ -18,7 +18,7 @@ const get = async (req, res) => {
     return res.status(200).send({
       success: true,
       message: "成功獲取預購表單",
-      preorder: preorder,
+      form: form,
     })
   } catch (error) {
     console.log(error)
@@ -46,7 +46,7 @@ const add = async (req, res) => {
   }
 
   try {
-    const preorderInDB = await getPreorderModel(uid)
+    const preorderInDB = await getFormModel(uid)
     if (preorderInDB !== -1) {
       return res.status(400).send({
         success: false,
@@ -54,17 +54,17 @@ const add = async (req, res) => {
       })
     }
 
-    const preorderID = await addPreorderModel(addPreorderDTO)
-    if (preorderID === -1) {
+    const formId = await addFormModel(addPreorderDTO)
+    if (formId === -1) {
       return res.status(500).send({
         success: false,
         message: "資料庫出事了，請聯繫客服",
       })
     }
     return res.status(200).send({
-      success: true,
-      message: "建立預購表單成功",
-      preorderID: preorderID,
+      "success": true,
+      "message": "建立預購表單成功",
+      "preorder-formId": formId,
     })
   } catch (error) {
     console.log(error)
@@ -117,7 +117,7 @@ const update = async (req, res) => {
   }
 
   try {
-    const preorderInDB = await getPreorderModel(uid)
+    const preorderInDB = await getFormModel(uid)
     if (preorderInDB === -2) {
       return res.status(500).send({
         success: false,
@@ -130,17 +130,17 @@ const update = async (req, res) => {
       })
     }
 
-    const preorderID = await updatePreorderModel(uid, updatePreoderDTO)
-    if (preorderID === -1) {
+    const formId = await updateFormModel(uid, updatePreoderDTO)
+    if (formId === -1) {
       return res.status(500).send({
         success: false,
         message: "資料庫出事了，請聯繫客服",
       })
     }
     return res.status(200).send({
-      success: true,
-      message: "修改預購表單成功",
-      preorderID: preorderID,
+      "success": true,
+      "message": "修改預購表單成功",
+      "preorder-formId": formId,
     })
   } catch (error) {
     console.log(error)
