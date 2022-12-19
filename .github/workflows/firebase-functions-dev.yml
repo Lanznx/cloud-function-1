@@ -10,7 +10,6 @@ jobs:
       name: Deploy Functions in Develop Environment
       runs-on: self-hosted
       container: node:16.14.2
-      environment: dev
 
       steps:
       - name: Checkout
