@@ -30,6 +30,7 @@ app.use("/type", require("./routes/type"))
 app.use("/tag", require("./routes/tag"))
 app.use("/stat", require("./routes/stat"))
 app.use("/discount", require("./routes/discountType"))
+app.use("/preorder", require("./routes/preorder"))
 
 // cloud functions
 exports.api = functions
