@@ -5,6 +5,31 @@ const {
   getPreorderModel,
 } = require("../../model/preorder/preorder.model.js")
 
+const get = async (req, res) => {
+  const { uid } = req.middleware
+  try {
+    const preorder = await getPreorderModel(uid)
+    if (preorder === -1) {
+      return res.status(400).send({
+        success: false,
+        message: "預購表單為空",
+      })
+    }
+    return res.status(200).send({
+      success: true,
+      message: "成功獲取預購表單",
+      preorder: preorder,
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send({
+      success: false,
+      message: "獲取預購表單失敗",
+      err: error,
+    })
+  }
+}
+
 const add = async (req, res) => {
   const { uid } = req.middleware
   const addPreorderDTO = {
@@ -93,14 +118,14 @@ const update = async (req, res) => {
 
   try {
     const preorderInDB = await getPreorderModel(uid)
-    if (preorderInDB === -1) {
+    if (preorderInDB === -2) {
       return res.status(500).send({
         success: false,
         message: "資料庫出事了，請聯繫客服",
       })
-    } else if (preorderInDB === -2) {
-      return res.status(200).send({
-        success: true,
+    } else if (preorderInDB === -1) {
+      return res.status(400).send({
+        success: false,
         message: "尚未建立預購表單",
       })
     }
@@ -130,4 +155,5 @@ const update = async (req, res) => {
 module.exports = {
   add,
   update,
+  get,
 }

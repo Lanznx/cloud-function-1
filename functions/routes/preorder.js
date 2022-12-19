@@ -4,5 +4,6 @@ const { auth } = require("../middleware/auth")
 const preorder = require("../controller/preorder/preorder.controller")
 router.post("/", auth, preorder.add)
 router.put("/", auth, preorder.update)
+router.get("/", auth, preorder.get)
 
 module.exports = router

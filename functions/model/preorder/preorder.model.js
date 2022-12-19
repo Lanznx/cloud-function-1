@@ -31,11 +31,12 @@ const getPreorderModel = async (uid) => {
       .collection("preorders")
       .where("uid", "==", uid)
       .get()
-    const preorderID = docRef.docs[0].id
-    if (!preorderID) {
+    if (docRef.empty) {
       return -1
     }
-    return preorderID
+    const preorder = docRef.docs[0].data()
+
+    return preorder
   } catch (error) {
     console.log(error)
     return -2
