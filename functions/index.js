@@ -36,6 +36,10 @@ exports.api = functions
   .region("asia-east1")
   .https.onRequest(app)
 
+exports.dev = functions
+  .region("asia-east1")
+  .https.onRequest(app)
+
 exports.hello = functions
   .region("asia-east1")
   .https.onRequest((req, res) => {

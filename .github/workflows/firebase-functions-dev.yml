@@ -1,0 +1,31 @@
+name: CD-dev
+
+on:
+  push:
+    branches:
+    - develop
+
+jobs:
+  prod-deploy:
+      name: Deploy Functions in Develop Environment
+      runs-on: self-hosted
+      container: node:16.14.2
+      environment: dev
+
+      steps:
+      - name: Checkout
+        uses: actions/checkout@v2 
+
+      - name: check node version
+        run: node -v
+
+      - name: install sudo
+        run: apt-get update && apt-get install sudo
+        
+      - name: Build
+        run: cd functions && npm install
+
+      - name: Firebase Deploy
+        run: |
+          sudo npm install -g firebase-tools
+          firebase deploy --token ${{ secrets.FIREBASE_TOKEN }} --only functions:dev
