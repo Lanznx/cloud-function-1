@@ -5,5 +5,6 @@ const form = require("../controller/preorder/form.controller")
 router.post("/", auth, form.add)
 router.put("/", auth, form.update)
 router.get("/", auth, form.get)
+router.delete("/", auth, form.disable)
 
 module.exports = router

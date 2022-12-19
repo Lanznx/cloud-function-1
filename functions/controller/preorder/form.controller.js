@@ -3,6 +3,8 @@ const {
   addFormModel,
   updateFormModel,
   getFormModel,
+  disableFormModel,
+  enableFormModel,
 } = require("../../model/preorder/form.model.js")
 
 const get = async (req, res) => {
@@ -46,11 +48,19 @@ const add = async (req, res) => {
   }
 
   try {
-    const preorderInDB = await getFormModel(uid)
-    if (preorderInDB !== -1) {
-      return res.status(400).send({
-        success: false,
-        message: "已經有預購表單了",
+    const formInDB = await getFormModel(uid)
+    if (formInDB !== -1) {
+      const formId = await enableFormModel(uid)
+      if (formId === -1) {
+        return res.status(500).send({
+          success: false,
+          message: "資料庫出事了，請聯繫客服",
+        })
+      }
+      return res.status(200).send({
+        "success": true,
+        "message": "預購表單已存在，啟用預購表單成功",
+        "preorder-formId": formId,
       })
     }
 
@@ -152,8 +162,53 @@ const update = async (req, res) => {
   }
 }
 
+const disable = async (req, res) => {
+  const { uid } = req.middleware
+  try {
+    const preorderInDB = await getFormModel(uid)
+    if (preorderInDB === -2) {
+      return res.status(500).send({
+        success: false,
+        message: "資料庫出事了，請聯繫客服",
+      })
+    } else if (preorderInDB === -1) {
+      return res.status(400).send({
+        success: false,
+        message: "尚未建立預購表單",
+      })
+    } else if (preorderInDB["enable"] === false) {
+      return res.status(400).send({
+        success: false,
+        message: "預購表單已關閉",
+      })
+    }
+
+    const formId = await disableFormModel(uid)
+    if (formId === -1) {
+      return res.status(500).send({
+        success: false,
+        message: "資料庫出事了，請聯繫客服",
+      })
+    }
+    return res.status(200).send({
+      "success": true,
+      "message": "關閉預購表單成功",
+      "preorder-formId": formId,
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send({
+      success: false,
+      message: "關閉預購表單失敗，請聯繫客服",
+      err: error,
+    })
+  }
+}
+
+
 module.exports = {
   add,
   update,
   get,
+  disable,
 }

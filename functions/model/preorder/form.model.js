@@ -2,7 +2,7 @@ const { db } = require("../../utils/admin")
 
 const addFormModel = async (preorderDTO) => {
   try {
-    const docRef = await db.collection("preorders").add(preorderDTO)
+    const docRef = await db.collection("preorder-forms").add(preorderDTO)
     return docRef.id
   } catch (error) {
     console.log(error)
@@ -13,11 +13,11 @@ const addFormModel = async (preorderDTO) => {
 const updateFormModel = async (uid, preorderDTO) => {
   try {
     const docRef = await db
-      .collection("preorders")
+      .collection("preorder-forms")
       .where("uid", "==", uid)
       .get()
     const preorderID = docRef.docs[0].id
-    await db.collection("preorders")
+    await db.collection("preorder-forms")
       .doc(preorderID)
       .update(preorderDTO)
 
@@ -31,7 +31,7 @@ const updateFormModel = async (uid, preorderDTO) => {
 const getFormModel = async (uid) => {
   try {
     const docRef = await db
-      .collection("preorders")
+      .collection("preorder-forms")
       .where("uid", "==", uid)
       .get()
     if (docRef.empty) {
@@ -51,8 +51,50 @@ const getFormModel = async (uid) => {
   }
 }
 
+const disableFormModel = async (uid) => {
+  try {
+    const docRef = await db
+      .collection("preorder-forms")
+      .where("uid", "==", uid)
+      .get()
+    const preorderID = docRef.docs[0].id
+    await db.collection("preorder-forms")
+      .doc(preorderID)
+      .update({
+        enable: false,
+      })
+
+    return preorderID
+  } catch (error) {
+    console.log(error)
+    return -1
+  }
+}
+
+const enableFormModel = async (uid) => {
+  try {
+    const docRef = await db
+      .collection("preorder-forms")
+      .where("uid", "==", uid)
+      .get()
+    const preorderID = docRef.docs[0].id
+    await db.collection("preorder-forms")
+      .doc(preorderID)
+      .update({
+        enable: true,
+      })
+
+    return preorderID
+  } catch (error) {
+    console.log(error)
+    return -1
+  }
+}
+
 module.exports = {
   addFormModel,
   updateFormModel,
   getFormModel,
+  disableFormModel,
+  enableFormModel,
 }
