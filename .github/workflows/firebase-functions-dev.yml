@@ -8,7 +8,7 @@ on:
 jobs:
   prod-deploy:
       name: Deploy Functions in Develop Environment
-      runs-on: self-hosted
+      runs-on: ubuntu-latest
       container: node:16.14.2
 
       steps:
