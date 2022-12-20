@@ -35,7 +35,7 @@ const get = async (req, res) => {
     return res.status(200).send({
       "success": true,
       "message": "成功獲取表單",
-      "preorder-form": form,
+      "preorderForm": form,
     })
   } catch (error) {
     console.log(error)

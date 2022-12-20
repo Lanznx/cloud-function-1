@@ -60,7 +60,7 @@ const add = async (req, res) => {
       return res.status(200).send({
         "success": true,
         "message": "預購表單已存在，啟用預購表單成功",
-        "preorder-formId": formId,
+        "preorderFormId": formId,
       })
     }
 
@@ -74,7 +74,7 @@ const add = async (req, res) => {
     return res.status(200).send({
       "success": true,
       "message": "建立預購表單成功",
-      "preorder-formId": formId,
+      "preorderFormId": formId,
     })
   } catch (error) {
     console.log(error)
@@ -150,7 +150,7 @@ const update = async (req, res) => {
     return res.status(200).send({
       "success": true,
       "message": "修改預購表單成功",
-      "preorder-formId": formId,
+      "preorderFormId": formId,
     })
   } catch (error) {
     console.log(error)
@@ -193,7 +193,7 @@ const disable = async (req, res) => {
     return res.status(200).send({
       "success": true,
       "message": "關閉預購表單成功",
-      "preorder-formId": formId,
+      "preorderFormId": formId,
     })
   } catch (error) {
     console.log(error)
