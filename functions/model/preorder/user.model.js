@@ -35,8 +35,41 @@ const getPreorderList = async (gapDTO) => {
   }
 }
 
+const getPreorderModel = async (preorderId) => {
+  try {
+    const docRef = await db.collection("preorders")
+      .doc(preorderId)
+      .get()
+    if (!docRef.exists) {
+      return -2
+    }
+    const preorderDTO = {
+      preorderId: docRef.id,
+      ...docRef.data(),
+    }
+    return preorderDTO
+  } catch (error) {
+    console.log(error)
+    return -1
+  }
+}
+
+const updatePreorderModel = async (preorderId, preorderDTO) => {
+  try {
+    const docRef = await db.collection("preorders")
+      .doc(preorderId)
+      .update(preorderDTO)
+    return docRef
+  } catch (error) {
+    console.log(error)
+    return -1
+  }
+}
+
 
 module.exports = {
   addPreorderModel,
   getPreorderList,
+  getPreorderModel,
+  updatePreorderModel,
 }

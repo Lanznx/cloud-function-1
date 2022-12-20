@@ -1,5 +1,9 @@
 // const checkColumn = require("../../helper/checkColumn")
-const { getPreorderList } = require("../../model/preorder/user.model")
+const {
+  getPreorderList,
+  getPreorderModel,
+  updatePreorderModel,
+} = require("../../model/preorder/user.model")
 
 const get = async (req, res) => {
   const { uid } = req.middleware
@@ -49,7 +53,66 @@ const get = async (req, res) => {
   }
 }
 
+const finish = async (req, res) => {
+  const { uid } = req.middleware
+  const { preorderId } = req.params
+
+  if (!preorderId) {
+    return res.status(400).send({
+      success: false,
+      message: "麻煩提供 preorderId",
+    })
+  }
+
+  try {
+    const preorder = await getPreorderModel(preorderId)
+    if (preorder === -2) {
+      return res.status(400).send({
+        success: false,
+        message: "訂單不存在",
+      })
+    } else if (preorder === -1) {
+      return res.status(500).send({
+        success: false,
+        message: "取得訂單時資料庫錯誤",
+      })
+    } else if (preorder["isPicked"] === true) {
+      return res.status(400).send({
+        success: false,
+        message: "訂單已完成",
+      })
+    } else if (preorder["uid"] !== uid) {
+      return res.status(400).send({
+        success: false,
+        message: "訂單不屬於你",
+      })
+    }
+    const preorderDTO = {
+      isPicked: true,
+    }
+    const result = await updatePreorderModel(preorderId, preorderDTO)
+    if (result === -1) {
+      return res.status(500).send({
+        success: false,
+        message: "更新訂單時資料庫錯誤",
+      })
+    }
+    return res.status(200).send({
+      success: true,
+      message: "更新訂單狀態完成",
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send({
+      success: false,
+      message: "訂單完成失敗，請稍後再試",
+      err: error,
+    })
+  }
+}
+
 
 module.exports = {
   get,
+  finish,
 }

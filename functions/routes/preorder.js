@@ -10,7 +10,7 @@ router.get("/", auth, form.get)
 router.delete("/", auth, form.disable)
 
 router.get("/user", auth, preorderUser.get)
-// router.patch("/user/:preorderId", auth, preorderUser.finish)
+router.patch("/user/:preorderId", auth, preorderUser.finish)
 // router.delete("/user/:preorderId", auth, preorderUser.remove)
 
 router.get("/customer/:uid", preorderCustomer.get)
