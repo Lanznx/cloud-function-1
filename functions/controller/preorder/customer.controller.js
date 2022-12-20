@@ -58,7 +58,7 @@ const add = async (req, res) => {
     productList: productList,
     pickUpTime: pickUpTime,
     createTime: new Date().getTime(),
-    isPick: false,
+    isPicked: false,
   }
 
   const missedKey = checkColumn(addPreorderDTO, [])
