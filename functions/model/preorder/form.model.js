@@ -38,7 +38,7 @@ const getFormModel = async (uid) => {
       return -1
     }
     const form = {
-      "preorder-formId": docRef.docs[0].id,
+      "preorderFormId": docRef.docs[0].id,
       "enable": docRef.docs[0].data().enable,
       "storeName": docRef.docs[0].data().storeName,
       "productList": docRef.docs[0].data().productList,
