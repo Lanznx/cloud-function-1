@@ -1,4 +1,4 @@
-const { checkColumn } = require("../../helper/checkColumn")
+const { checkColumn, removeUndefine } = require("../../helper/checkColumn")
 const {
   getFormModel,
 } = require("../../model/preorder/form.model")
@@ -68,10 +68,12 @@ const add = async (req, res) => {
       message: `請提供 ${missedKey}`,
     })
   }
-  addPreorderDTO["pickUpTime"] = parseInt(addPreorderDTO["pickUpTime"])
+  const cleanPreorderDTO = removeUndefine(addPreorderDTO)
 
-  for (let i = 0; i < addPreorderDTO["productList"].length; i++) {
-    const product = addPreorderDTO["productList"][i]
+  cleanPreorderDTO["pickUpTime"] = parseInt(cleanPreorderDTO["pickUpTime"])
+
+  for (let i = 0; i < cleanPreorderDTO["productList"].length; i++) {
+    const product = cleanPreorderDTO["productList"][i]
 
     const productDTO = {
       pid: product["pid"],
@@ -109,7 +111,7 @@ const add = async (req, res) => {
       })
     }
 
-    const preorder = await addPreorderModel(addPreorderDTO)
+    const preorder = await addPreorderModel(cleanPreorderDTO)
     if (preorder === -1) {
       return res.status(500).send({
         success: false,
