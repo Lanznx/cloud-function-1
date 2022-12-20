@@ -119,7 +119,7 @@ const add = async (req, res) => {
     return res.status(200).send({
       "success": true,
       "message": "建立預購成功",
-      "preorder-id": preorder,
+      "preorderId": preorder,
     })
   } catch (error) {
     console.log(error)
