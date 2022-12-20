@@ -3,6 +3,7 @@ const {
   getPreorderList,
   getPreorderModel,
   updatePreorderModel,
+  removePreorderModel,
 } = require("../../model/preorder/user.model")
 
 const get = async (req, res) => {
@@ -84,7 +85,7 @@ const finish = async (req, res) => {
     } else if (preorder["uid"] !== uid) {
       return res.status(400).send({
         success: false,
-        message: "訂單不屬於你",
+        message: "你沒有權限修改此訂單",
       })
     }
     const preorderDTO = {
@@ -111,8 +112,62 @@ const finish = async (req, res) => {
   }
 }
 
+const remove = async (req, res) => {
+  const { uid } = req.middleware
+  const { preorderId } = req.params
+
+  if (!preorderId) {
+    return res.status(400).send({
+      success: false,
+      message: "麻煩提供 preorderId",
+    })
+  }
+
+  try {
+    const preorder = await getPreorderModel(preorderId)
+    if (preorder === -2) {
+      return res.status(400).send({
+        success: false,
+        message: "訂單不存在",
+      })
+    }
+    if (preorder === -1) {
+      return res.status(500).send({
+        success: false,
+        message: "取得訂單時資料庫錯誤",
+      })
+    }
+    if (preorder["uid"] !== uid) {
+      return res.status(400).send({
+        success: false,
+        message: "你沒有權限刪除此訂單",
+      })
+    }
+
+    const result = await removePreorderModel(preorderId)
+    if (result === -1) {
+      return res.status(500).send({
+        success: false,
+        message: "刪除訂單時資料庫錯誤",
+      })
+    }
+    return res.status(200).send({
+      success: true,
+      message: "刪除訂單成功",
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).send({
+      success: false,
+      message: "刪除訂單失敗，請稍後再試",
+      err: error,
+    })
+  }
+}
+
 
 module.exports = {
   get,
   finish,
+  remove,
 }

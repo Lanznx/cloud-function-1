@@ -66,10 +66,23 @@ const updatePreorderModel = async (preorderId, preorderDTO) => {
   }
 }
 
+const removePreorderModel = async (preorderId) => {
+  try {
+    const docRef = await db.collection("preorders")
+      .doc(preorderId)
+      .delete()
+    return docRef
+  } catch (error) {
+    console.log(error)
+    return -1
+  }
+}
+
 
 module.exports = {
   addPreorderModel,
   getPreorderList,
   getPreorderModel,
   updatePreorderModel,
+  removePreorderModel,
 }
