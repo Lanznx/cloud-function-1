@@ -49,11 +49,11 @@ const get = async (req, res) => {
 
 const add = async (req, res) => {
   const { uid } = req.params
-  const { contact, productList, pickUpTime, customerName } = req.body
+  const { contact, productList, pickUpTime, note } = req.body
 
   const addPreorderDTO = {
     uid: uid,
-    customerName: customerName,
+    note: note,
     contact: contact,
     productList: productList,
     pickUpTime: pickUpTime,
