@@ -61,7 +61,7 @@ const add = async (req, res) => {
     isPicked: false,
   }
 
-  const missedKey = checkColumn(addPreorderDTO, [])
+  const missedKey = checkColumn(addPreorderDTO, ["note"])
   if (missedKey) {
     return res.status(400).send({
       success: false,
