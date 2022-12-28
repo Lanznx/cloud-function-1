@@ -32,6 +32,8 @@ app.use("/stat", require("./routes/stat"))
 app.use("/discount", require("./routes/discountType"))
 app.use("/preorder", require("./routes/preorder"))
 
+app.listen(10000, () => console.log("App listening on port 10000!"))
+
 // cloud functions
 exports.api = functions
   .region("asia-east1")
